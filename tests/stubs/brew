@@ -1,6 +1,7 @@
 #!/bin/sh
 # Fake Homebrew. "Installed" packages are empty files in $STUB_STATE/brew.
 # BREW_FAIL="name ..." makes installing those names fail.
+# Installing nvm puts tests/fake-nvm.sh at $HOMEBREW_PREFIX/opt/nvm/nvm.sh.
 echo "brew $*" >> "$STUB_LOG"
 dir="$STUB_STATE/brew"
 mkdir -p "$dir/cask" "$dir/formula"
@@ -28,4 +29,8 @@ case " ${BREW_FAIL:-} " in
   *" $name "*) echo "Error: $name failed to install (stub)" >&2; exit 1 ;;
 esac
 touch "$dir/$kind/$name"
+if [ "$name" = nvm ]; then
+  mkdir -p "$HOMEBREW_PREFIX/opt/nvm"
+  cp "$(dirname "$0")/../fake-nvm.sh" "$HOMEBREW_PREFIX/opt/nvm/nvm.sh"
+fi
 echo "==> $name installed (stub)"

@@ -2,11 +2,17 @@
 # Written for the macOS default bash (3.2), so no associative arrays, and
 # arrays are never expanded while empty (that trips `set -u` on 3.2).
 #
-# A script lists its items with `cask` and `formula`, then calls run_installer:
+# A script lists its items with `cask`, `formula` and `step`, then calls
+# run_installer:
 #
 #   cask    slack "Team chat" "e.g. ..."
 #   formula jq    "JSON processor" "Used: ..."
+#   step    playwright-browsers "Playwright's browsers" "Used: ..."
 #   run_installer "Office" "$@"
+#
+# A step is anything that doesn't come from Homebrew. For a step named
+# foo-bar the script defines two functions: foo_bar_installed (returns 0 when
+# it's already there) and install_foo_bar. Steps run after the brew installs.
 #
 # run_installer shows a numbered menu with each item's description and lets
 # you pick all of them or only some. Options (passed through "$@"):
@@ -40,6 +46,10 @@ add_item() {
 }
 cask()    { add_item cask "$@"; }
 formula() { add_item formula "$@"; }
+step()    { add_item step "$@"; }
+
+# Function name prefix for a step: playwright-browsers -> playwright_browsers.
+step_fn() { echo "$1" | tr - _; }
 
 ensure_homebrew() {
   if ! command -v brew >/dev/null 2>&1 && [ -x /opt/homebrew/bin/brew ]; then
@@ -82,6 +92,23 @@ ${1##*/}
   return 1
 }
 
+# item_installed <index>
+item_installed() {
+  if [ "${KINDS[$1]}" = step ]; then
+    "$(step_fn "${NAMES[$1]}")_installed"
+  else
+    is_installed "${NAMES[$1]}"
+  fi
+}
+
+kind_heading() {
+  case "$1" in
+    cask) echo "Apps" ;;
+    formula) echo "Command-line tools" ;;
+    step) echo "Other setup" ;;
+  esac
+}
+
 print_menu() {
   local i heading="" mark
   bold "$1: $COUNT items"
@@ -90,10 +117,10 @@ print_menu() {
     if [ "${KINDS[$i]}" != "$heading" ]; then
       heading="${KINDS[$i]}"
       echo
-      if [ "$heading" = cask ]; then bold " Apps"; else bold " Command-line tools"; fi
+      bold " $(kind_heading "$heading")"
     fi
     mark=""
-    is_installed "${NAMES[$i]}" && mark="  (installed)"
+    item_installed $i && mark="  (installed)"
     printf ' %3d) \033[1m%s\033[0m\033[32m%s\033[0m\n' $((i + 1)) "${NAMES[$i]}" "$mark"
     printf '      %s\n' "${DESCS[$i]}"
     [ -n "${NOTES[$i]}" ] && dim "      ${NOTES[$i]}"
@@ -158,13 +185,14 @@ choose_items() {
     read -r -p "> " reply <&3 || exit 1
     case "$reply" in q | Q | quit) exit 0 ;; "") continue ;; esac
     parse_choice "$reply" || continue
-    if [ -z "$(picked_names cask)$(picked_names formula)" ]; then
+    if [ -z "$(picked_names cask)$(picked_names formula)$(picked_names step)" ]; then
       warn "Nothing picked."
       continue
     fi
     echo
     [ -n "$(picked_names cask)" ] && info "Apps:$(picked_names cask)"
     [ -n "$(picked_names formula)" ] && info "Command-line tools:$(picked_names formula)"
+    [ -n "$(picked_names step)" ] && info "Other setup:$(picked_names step)"
     read -r -p "Install these? [Y/n] " reply <&3 || exit 1
     case "$reply" in [nN]*) echo; continue ;; esac
     break
@@ -204,6 +232,23 @@ install_formulae() {
     else
       warn "$formula: failed"
       FAILED="$FAILED $formula"
+    fi
+  done
+}
+
+install_steps() {
+  local name fn
+  [ $# -eq 0 ] && return
+  bold "Other setup"
+  for name in "$@"; do
+    fn="$(step_fn "$name")"
+    if "${fn}_installed"; then
+      info "$name: already installed, skipped"
+    elif "install_$fn"; then
+      info "$name: installed"
+    else
+      warn "$name: failed"
+      FAILED="$FAILED $name"
     fi
   done
 }
@@ -256,5 +301,7 @@ run_installer() {
   install_casks $(picked_names cask)
   # shellcheck disable=SC2046
   install_formulae $(picked_names formula)
+  # shellcheck disable=SC2046
+  install_steps $(picked_names step)
   finish
 }

@@ -2,9 +2,9 @@
 
 APP_SCRIPTS="coding editing entertainment gaming office utils"
 
-# items <script> cask|formula: the brew names a script lists.
+# items <script> cask|formula|step: the names a script lists.
 items() { sed -n "s/^$2 \([^ ]*\) .*/\1/p" "apps/install-$1.sh"; }
-item_count() { { items "$1" cask; items "$1" formula; } | wc -l | tr -d ' '; }
+item_count() { { items "$1" cask; items "$1" formula; items "$1" step; } | wc -l | tr -d ' '; }
 category() { sed -n 's/^run_installer "\(.*\)" .*/\1/p' "apps/install-$1.sh"; }
 
 test_apps_help() {
@@ -29,7 +29,7 @@ test_apps_list_shows_every_item() {
     run "apps/install-$app.sh" --list
     expect_status 0
     expect_out "$(category "$app"): $(item_count "$app") items"
-    for name in $(items "$app" cask) $(items "$app" formula); do
+    for name in $(items "$app" cask) $(items "$app" formula) $(items "$app" step); do
       expect_out ") $name"
     done
   done
@@ -61,6 +61,44 @@ test_apps_all_installs_everything() {
     done
   done
   expect_log "brew tap hashicorp/tap"
+  # Coding's steps run after the brew installs, Node before Playwright.
+  expect_log "nvm install --lts"
+  expect_log "nvm alias default lts/*"
+  expect_log "npx -y playwright install"
+  expect_eq "$(grep -n -e '^brew install nvm$' -e '^nvm install' -e '^npx -y playwright' "$STUB_LOG" | cut -d: -f2- | tr '\n' '|')" \
+    "brew install nvm|nvm install --lts|npx -y playwright install|" "install order"
+}
+
+test_apps_list_shows_steps() {
+  run apps/install-coding.sh --list
+  expect_out "Other setup"
+  expect_out ") node-lts"
+  expect_out ") playwright-browsers"
+  expect_no_out "node-lts  (installed)"
+  mkdir -p "$HOME/Library/Caches/ms-playwright/chromium-1000"
+  run apps/install-coding.sh --list
+  expect_out "playwright-browsers  (installed)"
+}
+
+test_apps_node_needs_nvm() {
+  local n
+  n="$(item_count coding)"
+  run_tty "$((n - 1))
+y" apps/install-coding.sh
+  expect_out "nvm not found. Pick nvm too"
+  expect_out "Failed: node-lts"
+  expect_no_log_match "nvm install"
+}
+
+test_apps_playwright_needs_node() {
+  local n
+  without npx
+  n="$(item_count coding)"
+  run_tty "$n
+y" apps/install-coding.sh
+  expect_out "npx not found. Pick node-lts too"
+  expect_out "Failed: playwright-browsers"
+  expect_no_log_match "npx"
 }
 
 test_apps_rerun_skips_installed() {
@@ -71,6 +109,10 @@ test_apps_rerun_skips_installed() {
   expect_no_log_match "brew install"
   expect_out "visual-studio-code: already installed, skipped"
   expect_out "hashicorp/tap/terraform: already installed, skipped"
+  expect_out "node-lts: already installed, skipped"
+  expect_out "playwright-browsers: already installed, skipped"
+  expect_no_log_match "nvm install"
+  expect_no_log_match "npx"
 }
 
 test_apps_failed_install_is_reported() {

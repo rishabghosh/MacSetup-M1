@@ -1,2 +1,32 @@
+# macOS
 .DS_Store
+._*
+.AppleDouble
+.LSOverride
+Icon?
+
+# Editors
 .idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Secrets: never commit real keys or tokens
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python (claude/skills/find-flight scripts)
+__pycache__/
+*.py[cod]
+.venv/
+
+# Claude Code per-machine settings
+.claude/settings.local.json
+
+# Logs and scratch output
+*.log
+*.tmp

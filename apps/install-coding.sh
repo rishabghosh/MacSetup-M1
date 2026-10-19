@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
-# Install the coding apps and command-line tools that come from Homebrew.
-# Apps installed from a website or the App Store are listed in install.md.
+# Install the coding apps and command-line tools that come from Homebrew, plus
+# the latest LTS Node (through nvm) and Playwright's browsers. Apps installed from a website or the App Store are
+# listed in install.md.
 #
 # Run it to pick from a list, or pass --all to install everything.
 # Safe to re-run: anything already installed is skipped.
@@ -82,5 +83,47 @@ formula cpulimit "Caps how much CPU a running process can use." \
   "Not run yet. e.g. cpulimit -p <pid> -l 50"
 formula argp-standalone "A C library with no command of its own, needed to compile some Linux tools on macOS." \
   "Probably installed to build f3 for the pen drive tests. Nothing installed depends on it now"
+
+step node-lts "The latest LTS (long-term support) Node, installed with nvm and set as the default." \
+  "Node v22.14.0 is installed through nvm on the old Mac. e.g. node -v, npm install"
+step playwright-browsers "Playwright's test browsers (Chromium, Firefox, WebKit), with \`npx playwright install\`. Needs Node." \
+  "Used: npx playwright install (2 times in shell history), before npm run playwright-test in PrivatePdf"
+
+# Homebrew's nvm is a shell function in nvm.sh, not a command, so it has to
+# be sourced. Call it in a subshell: nvm.sh doesn't work under `set -u`.
+load_nvm() {
+  local nvm_sh="${HOMEBREW_PREFIX:-/opt/homebrew}/opt/nvm/nvm.sh"
+  [ -s "$nvm_sh" ] || return 1
+  export NVM_DIR="$HOME/.nvm"
+  set +u
+  # shellcheck source=/dev/null
+  . "$nvm_sh"
+}
+
+node_lts_installed() {
+  ( load_nvm && [ "$(nvm version 'lts/*')" != N/A ] ) >/dev/null 2>&1
+}
+install_node_lts() {
+  (
+    mkdir -p "$HOME/.nvm"
+    load_nvm || { warn "nvm not found. Pick nvm too, then re-run."; exit 1; }
+    nvm install --lts && nvm alias default 'lts/*'
+  )
+}
+
+# Playwright keeps its browsers here, one folder per browser and version.
+playwright_browsers_installed() {
+  ls -d "$HOME/Library/Caches/ms-playwright"/chromium-* >/dev/null 2>&1
+}
+install_playwright_browsers() {
+  (
+    command -v npx >/dev/null 2>&1 || load_nvm
+    if ! command -v npx >/dev/null 2>&1; then
+      warn "npx not found. Pick node-lts too (or run setup-claude.sh), then re-run."
+      exit 1
+    fi
+    npx -y playwright install
+  )
+}
 
 run_installer "Coding" "$@"

@@ -11,6 +11,7 @@ setup() {
   export HOME="$TEST_DIR/home"
   export STUB_LOG="$TEST_DIR/stub.log"
   export STUB_STATE="$TEST_DIR/state"
+  export HOMEBREW_PREFIX="$TEST_DIR/homebrew"
   export PATH="$STUBS:$BASE_PATH"
   mkdir -p "$HOME" "$STUB_STATE"
   : > "$STUB_LOG"
