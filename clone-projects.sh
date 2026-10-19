@@ -19,7 +19,7 @@ SKIP_ENV=false
 # folder|clone url[|ssh key]
 # The optional ssh key is for repos reached through a different GitHub account.
 REPOS="
-MACSETUP-M1|git@github.com:rishabghosh/MACSETUP-M1.git
+MACSETUP-M1|git@github.com:rishabghosh/MacSetup-M1.git
 Blender-Utilis|git@github.com:rishabghosh/Blender-Utils.git
 FabricFuser|git@github.com:rishabghosh/Fabric-Fuser.git
 PrivatePdf|git@github.com:rishabghosh/PrivatePdf.git

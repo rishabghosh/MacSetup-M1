@@ -12,7 +12,7 @@ Setup scripts for a fresh Apple Silicon Mac.
 4. Optionally recreates each project's gitignored `.env` files. Paths and timings are written automatically. Secrets are asked for one at a time.
 
 ```bash
-git clone https://github.com/rishabghosh/MACSETUP-M1.git
+git clone https://github.com/rishabghosh/MacSetup-M1.git
 ```
 
 ```bash
@@ -32,7 +32,7 @@ Secret prompts are hidden while you type. You can press Enter to leave a value b
 
 | Folder | Repo |
 |---|---|
-| MACSETUP-M1 | rishabghosh/MACSETUP-M1 |
+| MACSETUP-M1 | rishabghosh/MacSetup-M1 |
 | Blender-Utilis | rishabghosh/Blender-Utils |
 | FabricFuser | rishabghosh/Fabric-Fuser |
 | PrivatePdf | rishabghosh/PrivatePdf |
