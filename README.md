@@ -2,6 +2,14 @@
 
 Setup scripts for a fresh Apple Silicon Mac.
 
+## Install apps
+
+`apps/` has one script per category: Office, Coding, Entertainment, Gaming, Editing and Utils. Each one lists that category's Homebrew apps with a description of each, lets you pick all of them or only some (or pass `--all`), and installs Homebrew first if it's missing. Apps that come from a website or the App Store are listed in [apps/install.md](apps/install.md) with their download links.
+
+```bash
+./MACSETUP-M1/apps/install-coding.sh
+```
+
 ## Clone all projects
 
 `clone-projects.sh` does the following:
@@ -29,6 +37,53 @@ Options:
 Running the script again is safe. Folders that already exist and `.env` files that already exist are left alone. That means you can skip the secrets the first time and run it again once you have them.
 
 Secret prompts are hidden while you type. You can press Enter to leave a value blank and fill it in later by editing the file. When several files share a value, like the TeeJutsu Shipmojo keys, you're asked for it only once. Every `.env` file is written with `600` permissions.
+
+## Set up Claude
+
+`setup-claude.sh` sets up Claude Desktop and Claude Code. Run it after `clone-projects.sh`, because two of the MCP servers belong to a single project folder.
+
+```bash
+~/projects/MACSETUP-M1/setup-claude.sh
+```
+
+It does the following:
+
+1. Installs Claude Desktop (`claude`) and Claude Code (`claude-code`) with Homebrew, plus `uv` and `node`, which the MCP servers and desktop extensions run on.
+2. Adds the Claude Code settings you're used to (Opus with 1M context, skipped permission warnings) to `~/.claude/settings.json`. Settings you already have win. If anything changes, the old file is kept as `settings.json.bak`.
+3. Adds the `anthropics/skills` and `alirezarezvani/claude-skills` plugin marketplaces and installs `document-skills` and `example-skills`.
+4. Adds the MCP servers:
+
+   | Server | Where | Notes |
+   |---|---|---|
+   | fli-flights | all projects | Google Flights through `fli-mcp`, installed with `uv tool install 'flights[mcp]'`. INR, cheapest first. |
+   | kiwi-flights | all projects | `https://mcp.kiwi.com`, no sign-in |
+   | supabase | all projects | Read-only, project `mwmaxzznfwwmnmjlgybo` |
+   | atlassian | tee_jutsu_v1 | |
+   | vercel | teejutsu-admin-console | |
+
+5. Copies your own skills (`codebase-refactor`, `find-flight`, `privatepdf-e2e-tests`) and the `/pleasurism` command from [claude/](claude/) into `~/.claude`. Installs the public `find-skills` and `remotion-best-practices` skills with `npx skills`.
+6. Opens Claude Desktop and lists what you have to do in the app.
+
+Options:
+
+- `--skip-desktop`: Claude Code only.
+- `--skip-code`: Claude Desktop only.
+
+Running it again is safe. Anything that's already installed or configured is left alone.
+
+### Done by hand
+
+These belong to your account or this Mac, so the script can't set them up:
+
+- **Sign in** to Claude Desktop and Claude Code.
+- **Connectors** (Gmail, Google Drive, Slack, Claude Docs, ...) come back with your claude.ai account. Reconnect any that show "Connect" under Settings → Connectors.
+- **MCP sign-ins.** In Claude Code, run `/mcp` and sign in to supabase, atlassian and vercel.
+- **Desktop extensions.** In Claude Desktop, go to Settings → Extensions and install Filesystem (allow `~/projects/PrivatePdf`) and Blender. Blender only works while Blender is running with its MCP add-on enabled.
+- **Claude in Chrome.** Install the extension from [claude.ai/chrome](https://claude.ai/chrome) and pair it with the app. The script offers to open the page.
+
+The CapCut MCP from the old Mac isn't restored, because its source folder (`~/projects/try-capcut`) is gone.
+
+If you change a skill in `~/.claude/skills`, copy it back into `claude/skills/` so the next Mac gets it.
 
 ## Repos
 
