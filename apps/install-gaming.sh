@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Install the Gaming apps that come from Homebrew.
-# Apps installed from a website or the App Store are listed in install.md.
+# Apps installed from a website or the App Store are listed in install-gaming.md.
 #
 # Run it to pick from a list, or pass --all to install everything.
 # Safe to re-run: anything already installed is skipped.

@@ -258,7 +258,7 @@ finish() {
   if [ -n "$FAILED" ]; then
     warn "Failed:$FAILED"
   fi
-  bold "Done. Apps that don't come from Homebrew are listed in $(dirname "$0")/install.md"
+  bold "Done. Apps that don't come from Homebrew are listed in ${0%.sh}.md"
 }
 
 usage() {

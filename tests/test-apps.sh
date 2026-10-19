@@ -101,6 +101,15 @@ y" apps/install-coding.sh
   expect_no_log_match "npx"
 }
 
+test_apps_point_to_their_page() {
+  local app
+  for app in $APP_SCRIPTS; do
+    expect_file "apps/install-$app.md"
+    run "apps/install-$app.sh" --all
+    expect_out "Apps that don't come from Homebrew are listed in apps/install-$app.md"
+  done
+}
+
 test_apps_rerun_skips_installed() {
   run apps/install-coding.sh --all
   : > "$STUB_LOG"

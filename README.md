@@ -4,7 +4,7 @@ Setup scripts for a fresh Apple Silicon Mac.
 
 ## Install apps
 
-`apps/` has one script per category: Office, Coding, Entertainment, Gaming, Editing and Utils. Each one lists that category's Homebrew apps with a description of each, lets you pick all of them or only some (or pass `--all`), and installs Homebrew first if it's missing. Apps that come from a website or the App Store are listed in [apps/install.md](apps/install.md) with their download links.
+`apps/` has one script per category: Office, Coding, Entertainment, Gaming, Editing and Utils. Each one lists that category's Homebrew apps with a description of each, lets you pick all of them or only some (or pass `--all`), and installs Homebrew first if it's missing. Each script has a matching page, like [apps/install-coding.md](apps/install-coding.md), that lists the apps from a website or the App Store with their download links and any Homebrew alternative. [apps/install.md](apps/install.md) links to all of them.
 
 The Coding script also offers two steps that don't come from Homebrew. One installs the latest LTS Node with nvm and makes it the default. The other installs Playwright's browsers with `npx playwright install`. They run after the Homebrew installs, so nvm is there before Node and Node is there before Playwright. Each is skipped if it's already installed.
 

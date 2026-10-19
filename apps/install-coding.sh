@@ -2,7 +2,7 @@
 #
 # Install the coding apps and command-line tools that come from Homebrew, plus
 # the latest LTS Node (through nvm) and Playwright's browsers. Apps installed from a website or the App Store are
-# listed in install.md.
+# listed in install-coding.md.
 #
 # Run it to pick from a list, or pass --all to install everything.
 # Safe to re-run: anything already installed is skipped.
