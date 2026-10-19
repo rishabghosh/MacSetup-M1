@@ -12,12 +12,14 @@ Setup scripts for a fresh Apple Silicon Mac.
 4. Optionally recreates each project's gitignored `.env` files. Paths and timings are written automatically. Secrets are asked for one at a time.
 
 ```bash
-git clone https://github.com/rishabghosh/MacSetup-M1.git
+git clone https://github.com/rishabghosh/MacSetup-M1.git ~/projects/MACSETUP-M1
 ```
 
 ```bash
-./MACSETUP-M1/clone-projects.sh
+~/projects/MACSETUP-M1/clone-projects.sh
 ```
+
+This first clone uses HTTPS because the Mac has no SSH key yet. If the repo is private, git asks for your GitHub username and a personal access token instead of your password. You can also download the repo as a ZIP from GitHub and unzip it to `~/projects/MACSETUP-M1`.
 
 Options:
 
