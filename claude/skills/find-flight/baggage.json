@@ -1,0 +1,48 @@
+{
+  "_comment": "Checked-baggage allowances for Indian carriers, economy cabin, DOMESTIC sectors. fli/Google Flights does NOT return baggage weight, so we join on airline IATA code. Verified Aug 2026 against public airline baggage pages - re-verify before booking, airlines change these.",
+  "_verified": "2026-08-06",
+  "default_domestic": {
+    "checked_kg": 15,
+    "cabin_kg": 7,
+    "note": "Fallback for any Indian carrier not listed"
+  },
+  "airlines": {
+    "6E": {
+      "name": "IndiGo",
+      "domestic": { "checked_kg": 15, "cabin_kg": 7 },
+      "excess_inr_per_kg": { "prepaid_online": 500, "at_airport": 750 },
+      "hand_baggage_only_fare": true,
+      "note": "'IndiGo Lite' / cabin-only fares carry 0 kg checked. Google Flights labels these Basic Economy - use exclude_basic_economy=true to drop them."
+    },
+    "QP": {
+      "name": "Akasa Air",
+      "domestic": { "checked_kg": 15, "cabin_kg": 7 },
+      "excess_inr_per_kg": { "prepaid_online": 500, "at_airport": 750 },
+      "hand_baggage_only_fare": true
+    },
+    "SG": {
+      "name": "SpiceJet",
+      "domestic": { "checked_kg": 15, "cabin_kg": 7 },
+      "excess_inr_per_kg": { "prepaid_online": 500, "at_airport": 800 },
+      "hand_baggage_only_fare": true
+    },
+    "AI": {
+      "name": "Air India",
+      "domestic": { "checked_kg": 25, "cabin_kg": 8 },
+      "excess_inr_per_kg": { "prepaid_online": 400, "at_airport": 600 },
+      "hand_baggage_only_fare": true,
+      "note": "25 kg on standard domestic economy - the most generous mainline allowance. Comfort/Flex fares higher."
+    },
+    "IX": {
+      "name": "Air India Express",
+      "domestic": { "checked_kg": 15, "cabin_kg": 7 },
+      "excess_inr_per_kg": { "prepaid_online": 450, "at_airport": 700 },
+      "hand_baggage_only_fare": true
+    },
+    "9I": {
+      "name": "Alliance Air",
+      "domestic": { "checked_kg": 15, "cabin_kg": 7 },
+      "excess_inr_per_kg": { "prepaid_online": 500, "at_airport": 750 }
+    }
+  }
+}
