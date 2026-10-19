@@ -49,6 +49,11 @@ ensure_homebrew() {
 
   bold "Homebrew is not installed. Installing it (asks for your password)..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || exit 1
+  # A failed download runs an empty script, which still exits 0.
+  if [ ! -x /opt/homebrew/bin/brew ]; then
+    warn "Homebrew didn't install. Check your internet connection and re-run."
+    exit 1
+  fi
   eval "$(/opt/homebrew/bin/brew shellenv)"
   if ! grep -q "brew shellenv" "$HOME/.zprofile" 2>/dev/null; then
     echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile"
@@ -247,7 +252,9 @@ run_installer() {
   echo
   ensure_homebrew
   # Word splitting on the name lists is intended: brew names have no spaces.
+  # shellcheck disable=SC2046
   install_casks $(picked_names cask)
+  # shellcheck disable=SC2046
   install_formulae $(picked_names formula)
   finish
 }

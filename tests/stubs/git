@@ -1,0 +1,11 @@
+#!/bin/sh
+# Fake git: `git clone ... <url> <dir>` just creates <dir>.
+# GIT_FAIL="url ..." makes cloning those urls fail.
+echo "git $*" >> "$STUB_LOG"
+[ "$1" = clone ] || { echo "git stub: unsupported: $*" >&2; exit 1; }
+url="" dest=""
+for arg; do url="$dest"; dest="$arg"; done
+case " ${GIT_FAIL:-} " in
+  *" $url "*) echo "fatal: repository '$url' not found (stub)" >&2; exit 128 ;;
+esac
+mkdir -p "$dest"

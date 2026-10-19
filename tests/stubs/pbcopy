@@ -1,0 +1,4 @@
+#!/bin/sh
+# Fake pbcopy: the "clipboard" is $STUB_STATE/clipboard.
+echo "pbcopy $*" >> "$STUB_LOG"
+cat > "$STUB_STATE/clipboard"

@@ -1,0 +1,8 @@
+#!/bin/sh
+# Fake npx: `npx -y skills add <repo> ... -s <skill>` creates ~/.claude/skills/<skill>.
+echo "npx $*" >> "$STUB_LOG"
+skill=""
+while [ $# -gt 0 ]; do [ "$1" = -s ] && skill="$2"; shift; done
+[ -n "$skill" ] || { echo "npx stub: no -s <skill>" >&2; exit 1; }
+mkdir -p "$HOME/.claude/skills/$skill"
+echo "# $skill (stub)" > "$HOME/.claude/skills/$skill/SKILL.md"

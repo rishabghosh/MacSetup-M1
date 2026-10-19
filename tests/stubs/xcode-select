@@ -1,0 +1,6 @@
+#!/bin/sh
+# Fake xcode-select. XCODE_MISSING=1 pretends the Command Line Tools aren't installed.
+echo "xcode-select $*" >> "$STUB_LOG"
+case "$1" in
+  -p) [ -n "${XCODE_MISSING:-}" ] && exit 2; echo /Library/Developer/CommandLineTools ;;
+esac

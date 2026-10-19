@@ -1,0 +1,13 @@
+#!/bin/sh
+# Fake `ssh -T git@github.com`. Succeeds unless:
+#   SSH_FAIL_TIMES=n   the first n calls fail
+#   SSH_FAIL_KEY=path  calls with `-i path` always fail
+echo "ssh $*" >> "$STUB_LOG"
+n=$(cat "$STUB_STATE/ssh_calls" 2>/dev/null || echo 0)
+n=$((n + 1))
+echo "$n" > "$STUB_STATE/ssh_calls"
+denied() { echo "git@github.com: Permission denied (publickey)."; exit 255; }
+[ "$n" -le "${SSH_FAIL_TIMES:-0}" ] && denied
+case " $* " in *" -i ${SSH_FAIL_KEY:-none} "*) denied ;; esac
+echo "Hi stub! You've successfully authenticated, but GitHub does not provide shell access."
+exit 1

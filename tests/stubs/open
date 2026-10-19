@@ -1,0 +1,3 @@
+#!/bin/sh
+# Fake open: only logs the call.
+echo "open $*" >> "$STUB_LOG"

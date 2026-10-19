@@ -1,0 +1,3 @@
+#!/bin/sh
+# Fake ssh-agent: only logs the call.
+echo "ssh-agent $*" >> "$STUB_LOG"

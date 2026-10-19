@@ -1,0 +1,7 @@
+#!/bin/sh
+# Fake uv: `uv tool install 'flights[mcp]'` creates ~/.local/bin/fli-mcp.
+echo "uv $*" >> "$STUB_LOG"
+[ "$1 $2" = "tool install" ] || { echo "uv stub: unsupported: $*" >&2; exit 1; }
+mkdir -p "$HOME/.local/bin"
+printf '#!/bin/sh\n' > "$HOME/.local/bin/fli-mcp"
+chmod +x "$HOME/.local/bin/fli-mcp"

@@ -186,3 +186,18 @@ The tables only list the values the script asks for. The rest of each file (path
 
 - Local data that isn't in git, such as excel_image_mapper's `input/` and `extracted_images/`. Copy it over by hand.
 - Git stashes. They stay on the old machine, so apply or commit them before you switch.
+
+## Testing the scripts
+
+`tests/run.sh` runs shellcheck and about 40 tests for every script in a Docker container. Docker Desktop has to be running. The first run builds a ~100 MB image (about 30 s). After that a run takes about 20 s.
+
+```bash
+tests/run.sh
+```
+
+Nothing is installed, cloned or downloaded. `brew`, `git`, `ssh`, `claude`, `uv`, `npx`, `open` and the other commands the scripts call are replaced by stubs in [tests/stubs](tests/stubs). Each stub only logs what it was asked to do, and the tests check that log. The container has no network, mounts the repo read-only, gives each test an empty home folder, and uses bash 3.2 like macOS. Prompts are answered through a pseudo-terminal, so the interactive picker, hidden secret prompts and the `.env` answers are tested too.
+
+- `tests/run.sh apps`: only the test files whose name contains `apps` (also `clone`, `claude`). This skips shellcheck.
+- `tests/run.sh --shell`: open a shell in the test image.
+
+What it can't cover: real Homebrew installs, the macOS installer windows, and GitHub sign-in. To check those, run the scripts on a fresh Mac or a macOS VM.

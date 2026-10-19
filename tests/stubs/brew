@@ -1,0 +1,31 @@
+#!/bin/sh
+# Fake Homebrew. "Installed" packages are empty files in $STUB_STATE/brew.
+# BREW_FAIL="name ..." makes installing those names fail.
+echo "brew $*" >> "$STUB_LOG"
+dir="$STUB_STATE/brew"
+mkdir -p "$dir/cask" "$dir/formula"
+
+kind=formula
+case "$1" in
+  shellenv | tap) exit 0 ;;
+  list | install) cmd=$1; shift ;;
+  *) echo "brew stub: unsupported: $*" >&2; exit 1 ;;
+esac
+case "${1:-}" in
+  --cask) kind=cask; shift ;;
+  --formula) shift ;;
+esac
+name="${1:-}"
+name="${name##*/}"  # hashicorp/tap/terraform is listed as terraform
+
+if [ "$cmd" = list ]; then
+  if [ -z "$name" ] || [ "$name" = -1 ]; then ls -1 "$dir/$kind"; exit 0; fi
+  [ -e "$dir/$kind/$name" ]
+  exit
+fi
+
+case " ${BREW_FAIL:-} " in
+  *" $name "*) echo "Error: $name failed to install (stub)" >&2; exit 1 ;;
+esac
+touch "$dir/$kind/$name"
+echo "==> $name installed (stub)"

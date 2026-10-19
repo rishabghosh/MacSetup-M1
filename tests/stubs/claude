@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+"""Fake claude CLI: just the plugin and mcp subcommands setup-claude.sh uses.
+
+Marketplaces and plugins are kept in $STUB_STATE/claude.json. MCP servers go
+into ~/.claude.json the way the real CLI stores them: user scope under
+"mcpServers", local scope under "projects" -> <cwd> -> "mcpServers".
+"""
+import json
+import os
+import sys
+
+args = sys.argv[1:]
+with open(os.environ["STUB_LOG"], "a") as log:
+    log.write("claude " + " ".join(args) + "\n")
+
+
+def load(path, default):
+    return json.load(open(path)) if os.path.exists(path) else default
+
+
+def save(path, data):
+    with open(path, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+state_path = os.path.join(os.environ["STUB_STATE"], "claude.json")
+state = load(state_path, {"marketplaces": [], "plugins": []})
+
+if args[:3] == ["plugin", "marketplace", "list"]:
+    for repo in state["marketplaces"]:
+        print("  > %s\n    Source: GitHub (%s)" % (repo.split("/")[-1], repo))
+elif args[:3] == ["plugin", "marketplace", "add"]:
+    state["marketplaces"].append(args[3])
+    save(state_path, state)
+elif args[:2] == ["plugin", "list"]:
+    for plugin in state["plugins"]:
+        print("  > " + plugin)
+elif args[:2] == ["plugin", "install"]:
+    state["plugins"].append(args[2])
+    save(state_path, state)
+elif args[:2] == ["mcp", "add-json"] and args[2] == "-s":
+    scope, name, raw = args[3], args[4], args[5]
+    try:
+        server = json.loads(raw)
+    except ValueError as e:
+        sys.exit("Invalid JSON for %s: %s" % (name, e))
+    path = os.path.expanduser("~/.claude.json")
+    config = load(path, {})
+    if scope == "user":
+        target = config
+    elif scope == "local":
+        target = config.setdefault("projects", {}).setdefault(os.getcwd(), {})
+    else:
+        sys.exit("claude stub: unknown scope " + scope)
+    target.setdefault("mcpServers", {})[name] = server
+    save(path, config)
+else:
+    sys.exit("claude stub: unsupported: " + " ".join(args))

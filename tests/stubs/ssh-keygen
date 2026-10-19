@@ -1,0 +1,7 @@
+#!/bin/sh
+# Fake ssh-keygen: writes a dummy key pair to the -f path.
+echo "ssh-keygen $*" >> "$STUB_LOG"
+while [ $# -gt 0 ]; do [ "$1" = -f ] && key="$2"; shift; done
+mkdir -p "$(dirname "$key")"
+echo "stub private key" > "$key"
+echo "ssh-ed25519 AAAAstub stub" > "$key.pub"

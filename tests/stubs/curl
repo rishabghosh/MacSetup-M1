@@ -1,0 +1,5 @@
+#!/bin/sh
+# Fake curl: the tests have no network, so every download fails.
+echo "curl $*" >> "$STUB_LOG"
+echo "curl: (6) Could not resolve host (stub)" >&2
+exit 6
