@@ -4,7 +4,7 @@
 # clone-projects.sh has cloned the projects.
 #
 # Usage:
-#   ./restore-envs.sh                         restore from env-backup.tar.gz in this repo
+#   ./restore-envs.sh                         restore from env-backup.tar.gz at the repo root
 #   ./restore-envs.sh ~/Desktop/envs.tar.gz   restore from somewhere else
 #   ./restore-envs.sh --force                 also replace .env files that already exist
 #   PROJECTS_DIR=~/code ./restore-envs.sh     restore into a different folder
@@ -17,7 +17,7 @@ set -u
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 PROJECTS_DIR="${PROJECTS_DIR:-$HOME/projects}"
-ENV_BACKUP="${ENV_BACKUP:-$HERE/env-backup.tar.gz}"
+ENV_BACKUP="${ENV_BACKUP:-$(dirname "$HERE")/env-backup.tar.gz}"
 FORCE=false
 for arg; do
   case "$arg" in

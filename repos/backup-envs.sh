@@ -4,7 +4,7 @@
 # so restore-envs.sh can put them back after a fresh clone.
 #
 # Usage:
-#   ./backup-envs.sh                          writes env-backup.tar.gz in this repo
+#   ./backup-envs.sh                          writes env-backup.tar.gz at the repo root
 #   ENV_BACKUP=/Volumes/USB/envs.tar.gz ./backup-envs.sh
 #   PROJECTS_DIR=~/code ./backup-envs.sh      read projects from a different folder
 #
@@ -20,7 +20,7 @@ set -u
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 PROJECTS_DIR="${PROJECTS_DIR:-$HOME/projects}"
-ENV_BACKUP="${ENV_BACKUP:-$HERE/env-backup.tar.gz}"
+ENV_BACKUP="${ENV_BACKUP:-$(dirname "$HERE")/env-backup.tar.gz}"
 
 bold() { printf '\033[1m%s\033[0m\n' "$*"; }
 info() { printf '  %s\n' "$*"; }

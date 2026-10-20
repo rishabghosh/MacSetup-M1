@@ -1,14 +1,14 @@
 # Tests for clone-projects.sh.
 
 repo_folders() {
-  sed -n '/^REPOS="/,/^"/p' clone-projects.sh | sed -n 's/^\([A-Za-z0-9_.-]*\)|.*/\1/p'
+  sed -n '/^REPOS="/,/^"/p' repos/clone-projects.sh | sed -n 's/^\([A-Za-z0-9_.-]*\)|.*/\1/p'
 }
 
 VMA_KEY_SUFFIX=".ssh/id_ed25519_voices_mind_saction"
 
 test_clone_clones_everything() {
   local folder
-  run ./clone-projects.sh --skip-env
+  run repos/clone-projects.sh --skip-env
   expect_status 0
   expect_no_out "Failed:"
   for folder in $(repo_folders); do
@@ -23,16 +23,16 @@ test_clone_clones_everything() {
 
 test_clone_custom_projects_dir() {
   export PROJECTS_DIR="$HOME/code"
-  run ./clone-projects.sh --skip-env
+  run repos/clone-projects.sh --skip-env
   expect_status 0
   expect_dir "$HOME/code/rishab-cv"
   expect_no_path "$HOME/projects"
 }
 
 test_clone_rerun_skips_existing() {
-  run ./clone-projects.sh --skip-env
+  run repos/clone-projects.sh --skip-env
   : > "$STUB_LOG"
-  run ./clone-projects.sh --skip-env
+  run repos/clone-projects.sh --skip-env
   expect_status 0
   expect_no_log_match "git clone"
   expect_out "rishab-cv: already exists, skipped"
@@ -40,7 +40,7 @@ test_clone_rerun_skips_existing() {
 
 test_clone_needs_xcode_tools() {
   export XCODE_MISSING=1
-  run ./clone-projects.sh --skip-env
+  run repos/clone-projects.sh --skip-env
   expect_status 1
   expect_log "xcode-select --install"
   expect_no_log_match "git clone"
@@ -48,7 +48,7 @@ test_clone_needs_xcode_tools() {
 
 test_clone_failure_is_reported() {
   export GIT_FAIL="git@github.com:arnabghs/tee_jutsu_v1.git"
-  run ./clone-projects.sh --skip-env
+  run repos/clone-projects.sh --skip-env
   expect_status 0
   expect_out "tee_jutsu_v1: clone failed"
   expect_out "Failed: tee_jutsu_v1"
@@ -60,7 +60,7 @@ test_clone_creates_ssh_key_when_github_refuses() {
   # 1st check fails, then the "press Enter" loop fails once before working.
   export SSH_FAIL_TIMES=2
   run_tty "me@example.com
-" ./clone-projects.sh --skip-env
+" repos/clone-projects.sh --skip-env
   expect_status 0
   expect_log "ssh-keygen -t ed25519 -C me@example.com -f $HOME/.ssh/id_ed25519"
   expect_file "$HOME/.ssh/id_ed25519"
@@ -74,7 +74,7 @@ test_clone_creates_ssh_key_when_github_refuses() {
 
 test_clone_extra_key_can_be_skipped() {
   export SSH_FAIL_KEY="$HOME/$VMA_KEY_SUFFIX"
-  run_tty "n" ./clone-projects.sh --skip-env
+  run_tty "n" repos/clone-projects.sh --skip-env
   expect_status 0
   expect_out "vma: skipped (no working SSH key)"
   expect_out "Failed: vma"
@@ -93,7 +93,7 @@ env_answers() {
 
 test_clone_writes_env_files() {
   local p="$HOME/projects" f
-  run_tty "$(env_answers)" ./clone-projects.sh
+  run_tty "$(env_answers)" repos/clone-projects.sh
   expect_status 0
 
   for f in FabricFuser/backend/.env FabricFuser/frontend/.env.local image_product_mapper/.env \
@@ -127,9 +127,9 @@ test_clone_writes_env_files() {
 
 test_clone_rerun_keeps_env_files() {
   local before
-  run_tty "$(env_answers)" ./clone-projects.sh
+  run_tty "$(env_answers)" repos/clone-projects.sh
   before="$(cat "$HOME/projects/vma/.env")"
-  run_tty "y" ./clone-projects.sh
+  run_tty "y" repos/clone-projects.sh
   expect_status 0
   expect_out "vma/.env: already exists, skipped"
   expect_no_out "(hidden, Enter to leave blank)"
@@ -137,7 +137,7 @@ test_clone_rerun_keeps_env_files() {
 }
 
 test_clone_env_can_be_declined() {
-  run_tty "n" ./clone-projects.sh
+  run_tty "n" repos/clone-projects.sh
   expect_status 0
   expect_out "Skipped."
   expect_no_path "$HOME/projects/vma/.env"

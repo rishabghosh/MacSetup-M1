@@ -7,13 +7,12 @@ Setup scripts for a fresh Apple Silicon Mac. This page covers everything: what t
 | Path | What it does |
 |---|---|
 | [appsetup/](appsetup/) | One app installer per category (Office, Coding, Entertainment, Gaming, Editing, Utils), plus a page per category for the apps you install by hand |
-| [clone-projects.sh](clone-projects.sh) | Sets up GitHub SSH, clones every project into `~/projects` and recreates their `.env` files |
-| [backup-envs.sh](backup-envs.sh) / [restore-envs.sh](restore-envs.sh) | Back up the projects' `.env` files to one gitignored file, and put them back after a fresh clone |
+| [repos/clone-projects.sh](repos/clone-projects.sh) | Sets up GitHub SSH, clones every project into `~/projects` and recreates their `.env` files |
+| [repos/backup-envs.sh](repos/backup-envs.sh) / [repos/restore-envs.sh](repos/restore-envs.sh) | Back up the projects' `.env` files to one gitignored file, and put them back after a fresh clone |
 | [claudesetup/](claudesetup/) | `setup-claude.sh` sets up Claude Desktop and Claude Code. Also holds your own skills and commands |
 | [settings/](settings/) | Captures the old Mac's settings and restores them on the new one. `settings/saved/` holds the system settings and dotfiles without secrets |
 | [appsettings/](appsettings/) | Each app's own settings without secrets, in `appsettings/<app>/saved`, plus full capture and restore scripts for WebStorm |
 | [useful-commands.md](useful-commands.md) | Handy commands from the old Mac's shell history |
-| [installed-apps-report.md](installed-apps-report.md) | What was installed on the old Mac, and how |
 | [tests/](tests/) | Shellcheck and stubbed tests for every script |
 
 ## Setting up a new Mac, step by step
@@ -27,7 +26,7 @@ Setup scripts for a fresh Apple Silicon Mac. This page covers everything: what t
 Also back up the projects' `.env` files and copy `env-backup.tar.gz` somewhere safe (see [Back up and restore .env files](#back-up-and-restore-env-files)).
 
 ```bash
-./backup-envs.sh
+./repos/backup-envs.sh
 ```
 
 **On the new Mac:**
@@ -54,13 +53,13 @@ Also back up the projects' `.env` files and copy `env-backup.tar.gz` somewhere s
 4. **Clone your projects.** See [Clone all projects](#clone-all-projects).
 
    ```bash
-   ~/projects/MACSETUP-M1/clone-projects.sh --skip-env
+   ~/projects/MACSETUP-M1/repos/clone-projects.sh --skip-env
    ```
 
 5. **Put back the `.env` files.** Copy `env-backup.tar.gz` into `~/projects/MACSETUP-M1`, then run the restore. Run `clone-projects.sh` again without `--skip-env` afterwards if you have no backup, or to create any file the backup didn't have.
 
    ```bash
-   ~/projects/MACSETUP-M1/restore-envs.sh
+   ~/projects/MACSETUP-M1/repos/restore-envs.sh
    ```
 
 5. **Set up Claude.** Run it after cloning, because two of the MCP servers belong to a single project folder. See [Set up Claude](#set-up-claude).
@@ -273,7 +272,7 @@ App Store apps can also be installed from the command line with `mas` (`brew ins
 ## Clone all projects
 
 ```bash
-~/projects/MACSETUP-M1/clone-projects.sh
+~/projects/MACSETUP-M1/repos/clone-projects.sh
 ```
 
 It does the following:
@@ -286,7 +285,7 @@ It does the following:
 Options:
 
 - `--skip-env`: only clone, don't create any `.env` files.
-- `PROJECTS_DIR=~/somewhere ./clone-projects.sh`: clone somewhere other than `~/projects`.
+- `PROJECTS_DIR=~/somewhere ./repos/clone-projects.sh`: clone somewhere other than `~/projects`.
 
 Running the script again is safe. Folders that already exist and `.env` files that already exist are left alone. That means you can skip the secrets the first time and run it again once you have them.
 
@@ -297,20 +296,20 @@ Secret prompts are hidden while you type. You can press Enter to leave a value b
 On the old Mac:
 
 ```bash
-~/projects/MACSETUP-M1/backup-envs.sh
+~/projects/MACSETUP-M1/repos/backup-envs.sh
 ```
 
-- It saves every `.env` and `.env.*` file of the projects `clone-projects.sh` clones into `env-backup.tar.gz` in this repo. `.env.example`, files git tracks (like PrivatePdf's `.env.development`), `node_modules`, `.git` and virtualenvs are left out.
+- It saves every `.env` and `.env.*` file of the projects `clone-projects.sh` clones into `env-backup.tar.gz` at the repo root. `.env.example`, files git tracks (like PrivatePdf's `.env.development`), `node_modules`, `.git` and virtualenvs are left out.
 - `env-backup.tar.gz` holds your secrets. It is gitignored and written with `600` permissions. Copy it somewhere safe yourself (a password manager attachment or an encrypted USB drive) and don't share it.
-- `ENV_BACKUP=/Volumes/USB/envs.tar.gz ./backup-envs.sh` writes somewhere else. Running it again replaces the earlier backup.
+- `ENV_BACKUP=/Volumes/USB/envs.tar.gz ./repos/backup-envs.sh` writes somewhere else. Running it again replaces the earlier backup.
 
 On the new Mac, after cloning:
 
 ```bash
-~/projects/MACSETUP-M1/restore-envs.sh
+~/projects/MACSETUP-M1/repos/restore-envs.sh
 ```
 
-- It reads `env-backup.tar.gz` from this repo, or the path you pass: `./restore-envs.sh ~/Desktop/env-backup.tar.gz`.
+- It reads `env-backup.tar.gz` from this repo, or the path you pass: `./repos/restore-envs.sh ~/Desktop/env-backup.tar.gz`.
 - Each file goes back to the same place in its project, with `600` permissions. Projects that aren't cloned yet are skipped, so you can run it again after cloning them.
 - `.env` files that already exist are left alone. `--force` replaces them with the backed-up ones.
 - Both scripts take `PROJECTS_DIR=~/somewhere`, like `clone-projects.sh`.

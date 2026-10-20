@@ -214,7 +214,7 @@ add_mcps() {
     name="${line%%|*}"; json="${line#*|}"
     dir="$PROJECTS_DIR/$folder"
     if [ ! -d "$dir" ]; then
-      warn "$name: $dir doesn't exist. Run clone-projects.sh, then this script again."
+      warn "$name: $dir doesn't exist. Run repos/clone-projects.sh, then this script again."
     elif mcp_exists "$name" "$dir"; then
       info "$name ($folder): already added"
     else
