@@ -124,6 +124,11 @@ warn() { printf '\033[33m  ! %s\033[0m\n' "$*"; }
 
 py() { python3 -I "$HERE/settings.py" "$@"; }
 
+# keyboard_name <vendor id> <product id>
+keyboard_name() {
+  if [ "$1-$2" = 0-0 ]; then echo "built-in keyboard"; else echo "keyboard $1-$2"; fi
+}
+
 # export_domain <file> <domain> [-currentHost]: saves the domain as a plist.
 # Fails if this Mac has no such domain.
 export_domain() {
@@ -186,6 +191,11 @@ capture_system() {
     export_domain "$STAGE/system/currentHost/$domain.plist" "$domain" -currentHost && n=$((n + 1))
   done
   info "$n settings groups (Dock, Finder, keyboard, trackpad, menu bar, shortcuts, ...)"
+  local vendor product changes
+  py modifier-keys "$STAGE/system/currentHost/NSGlobalDomain.plist" |
+    while IFS="$(printf '\t')" read -r vendor product _ changes; do
+      info "Modifier keys ($(keyboard_name "$vendor" "$product")): $changes"
+    done
 
   # Everything else, for reference only. restore-settings.sh doesn't touch it.
   local all="$STAGE/reference/all-defaults" count=0

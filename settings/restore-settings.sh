@@ -123,6 +123,28 @@ saved_path() {
 
 # ---------------------------------------------------------------------------
 
+# keyboard_name <vendor id> <product id>
+keyboard_name() {
+  if [ "$1-$2" = 0-0 ]; then echo "built-in keyboard"; else echo "keyboard $1-$2"; fi
+}
+
+# The modifier keys (System Settings → Keyboard → Keyboard Shortcuts → Modifier
+# Keys) come back with the currentHost NSGlobalDomain, but only from the next
+# login. hidutil sets them now on the keyboard, the same way macOS does at
+# login, so they work straight away.
+restore_modifier_keys() {
+  local vendor product mapping changes
+  py modifier-keys "$BACKUP_DIR/system/currentHost/NSGlobalDomain.plist" |
+    while IFS="$(printf '\t')" read -r vendor product mapping changes; do
+      info "Modifier keys ($(keyboard_name "$vendor" "$product")): $changes"
+      command -v hidutil >/dev/null || continue
+      hidutil property \
+        --matching "{\"VendorID\":$vendor,\"ProductID\":$product,\"PrimaryUsagePage\":1,\"PrimaryUsage\":6}" \
+        --set "$mapping" >/dev/null ||
+        warn "Couldn't apply them now. They take effect after you log out and back in."
+    done
+}
+
 restore_system() {
   [ -d "$BACKUP_DIR/system/defaults" ] || return
   bold "System settings"
@@ -137,6 +159,7 @@ restore_system() {
     import_domain "$file" "$(basename "$file" .plist)" -currentHost && n=$((n + 1))
   done
   info "$n settings groups restored"
+  restore_modifier_keys
 
   local dir
   for dir in Fonts Services; do

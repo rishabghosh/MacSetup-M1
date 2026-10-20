@@ -1,0 +1,3 @@
+#!/bin/sh
+# Fake hidutil: only logs the call.
+echo "hidutil $*" >> "$STUB_LOG"

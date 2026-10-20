@@ -476,7 +476,7 @@ On the old Mac:
 - This repo is public, so the capture is split in two:
   - In the repo, settings without secrets. Commit them after a capture.
     - [appsettings/](appsettings/)`<app>/saved`: each app's own settings. That's iTerm2 (`iterm2`), WebStorm (`webstorm`) and other JetBrains IDEs (`pycharm`, `intellijidea`, ...: options, keymaps, code styles, colours, templates, plugin list), VS Code (`vscode`), Cursor and Antigravity settings and extensions, and each browser profile's extensions and custom search engines (`chrome`, `brave`, `firefox`, ...).
-    - [settings/saved/](settings/saved/): System Settings (Dock, Finder, keyboard, trackpad, menu bar, shortcuts), Quick Actions and shell and git dotfiles.
+    - [settings/saved/](settings/saved/): System Settings (Dock, Finder, keyboard, modifier keys, trackpad, menu bar, shortcuts), Quick Actions and shell and git dotfiles.
   - `~/MacSettingsBackup` (and a `.zip` next to it), outside the repo: everything personal. That's bookmarks, browser preferences, the preferences of every app in `/Applications`, fonts, text replacements, `~/.ssh/config`, `~/.aws/config`, `~/.npmrc`, WebStorm's workspaces and scratches, and JetBrains files with accounts or recent projects. Copy that folder to the new Mac yourself. `BACKUP_DIR=/Volumes/USB/settings ./settings/capture-settings.sh` writes it somewhere else.
 - Before a file goes in the repo, it's checked for secrets: API keys and tokens (`sk-…`, `ghp_…`, `AKIA…`, `xox…`, JWTs), private keys, passwords in URLs, and lines like `API_KEY=…` or `"token": "…"`. A file that has one goes to `~/MacSettingsBackup` instead, and the capture lists it. Plists lose recent files and folders, file bookmarks, and any key named like a token, password or licence.
 - Passwords, cookies, browser history and IDE login tokens are left out of both.
@@ -492,6 +492,7 @@ On the new Mac, after the apps are installed:
 - It asks about each part (system settings, dotfiles, iTerm2, ...) in turn. `--yes` restores everything without asking.
 - An app's settings are only restored for apps that are installed and closed, so run it from Terminal rather than iTerm2.
 - Anything it replaces is saved first to `<backup folder>/undo-<time>`, so you can copy it back.
+- Modifier keys (System Settings → Keyboard → Keyboard Shortcuts → Modifier Keys, like Caps Lock and Control swapped) come back with the system settings and work straight away, without logging out. The capture and the restore both print what's remapped. They're saved per keyboard: the built-in keyboard's carry over to any Mac, but an external keyboard's only apply to that same model.
 - IntelliJ IDEA, IntelliJ IDEA CE and PyCharm get your WebStorm settings (keymaps, code styles, colours, options) and plugins when the backup has none of their own. WebStorm-only plugins, such as the JavaScript ones, may not install in IDEA CE.
 
 ### WebStorm

@@ -326,6 +326,46 @@ test_settings_restore_everything() {
   expect_no_out "Couldn't"
 }
 
+# Caps Lock and Control swapped on the built-in keyboard, as System Settings
+# saves it.
+swap_caps_lock_and_control() {
+  python3 -I - "$STUB_STATE/defaults-currentHost/NSGlobalDomain.plist" <<'EOF'
+import os, plistlib, sys
+os.makedirs(os.path.dirname(sys.argv[1]), exist_ok=True)
+caps, left, right = 0x700000039, 0x7000000E0, 0x7000000E4
+pairs = [(left, caps), (caps, right), (right, caps)]
+with open(sys.argv[1], "wb") as f:
+    plistlib.dump({"com.apple.keyboard.modifiermapping.0-0-0": [
+        {"HIDKeyboardModifierMappingSrc": s, "HIDKeyboardModifierMappingDst": d} for s, d in pairs]}, f)
+EOF
+}
+
+test_settings_modifier_keys() {
+  make_old_mac
+  swap_caps_lock_and_control
+  run settings/capture-settings.sh
+  expect_status 0
+  expect_out "Modifier keys (built-in keyboard): Control → Caps Lock, Caps Lock → Control"
+  expect_file "$SAVED_ROOT/settings/saved/system/currentHost/NSGlobalDomain.plist"
+
+  make_new_mac
+  run settings/restore-settings.sh "$BACKUP_DIR" --yes
+  expect_status 0
+  expect_log "defaults -currentHost import NSGlobalDomain"
+  expect_out "Modifier keys (built-in keyboard): Control → Caps Lock, Caps Lock → Control"
+  expect_log_count 'hidutil property --matching {"VendorID":0,"ProductID":0,"PrimaryUsagePage":1,"PrimaryUsage":6} --set {"HIDKeyboardModifierMappingPairs": [{"HIDKeyboardModifierMappingSrc": 30064771296, "HIDKeyboardModifierMappingDst": 30064771129}' 1
+}
+
+test_settings_restore_without_modifier_keys() {
+  make_old_mac
+  run settings/capture-settings.sh
+  make_new_mac
+  run settings/restore-settings.sh "$BACKUP_DIR" --yes
+  expect_status 0
+  expect_no_out "Modifier keys"
+  expect_no_log_match "hidutil"
+}
+
 test_settings_restore_from_the_repo_alone() {
   make_old_mac
   run settings/capture-settings.sh

@@ -166,6 +166,51 @@ def text_replacements(db):
         print(f"{clean(shortcut)}\t{clean(phrase)}")
 
 
+# Keys as System Settings → Keyboard → Modifier Keys saves them: HID usage page
+# 7 (keyboard) or 0xFF (Apple vendor, for fn) in the high bits, usage below.
+MODIFIER_KEYS = {
+    0x700000039: "Caps Lock",
+    0x7000000E0: "Control", 0x7000000E4: "Control",
+    0x7000000E1: "Shift", 0x7000000E5: "Shift",
+    0x7000000E2: "Option", 0x7000000E6: "Option",
+    0x7000000E3: "Command", 0x7000000E7: "Command",
+    0x700000029: "Escape",
+    0xFF00000003: "fn (Globe)", 0xFF00000004: "fn (Globe)",
+    0x700000000: "No Action", 0: "No Action",
+}
+
+
+def modifier_keys(plist):
+    """Your modifier key changes, from the currentHost NSGlobalDomain plist:
+    <vendor id> <product id> <hidutil property JSON> <what changed>, one line
+    per keyboard. The built-in keyboard is 0 0. The JSON sets the property
+    macOS itself sets from these preferences at login, so it can be applied
+    now without being applied twice later."""
+    try:
+        with open(plist, "rb") as f:
+            prefs = plistlib.load(f)
+    except Exception:  # plistlib raises several kinds on odd plists
+        return
+    for key in sorted(prefs):
+        m = re.fullmatch(r"com\.apple\.keyboard\.modifiermapping\.(\d+)-(\d+)-\d+", key)
+        if not m or not isinstance(prefs[key], list):
+            continue
+        pairs = [
+            (item["HIDKeyboardModifierMappingSrc"], item["HIDKeyboardModifierMappingDst"])
+            for item in prefs[key]
+            if isinstance(item, dict) and "HIDKeyboardModifierMappingSrc" in item and "HIDKeyboardModifierMappingDst" in item
+        ]
+        if not pairs:
+            continue
+        mapping = {"HIDKeyboardModifierMappingPairs": [{"HIDKeyboardModifierMappingSrc": s, "HIDKeyboardModifierMappingDst": d} for s, d in pairs]}
+        changes = []
+        for s, d in pairs:
+            change = f"{MODIFIER_KEYS.get(s, hex(s))} → {MODIFIER_KEYS.get(d, hex(d))}"
+            if change not in changes:
+                changes.append(change)
+        print(f"{m.group(1)}\t{m.group(2)}\t{json.dumps(mapping)}\t{', '.join(changes)}")
+
+
 def excluded(name, patterns):
     return any(fnmatch.fnmatchcase(name, p) for p in patterns)
 
@@ -498,6 +543,7 @@ COMMANDS = {
     "jetbrains-plugins": jetbrains_plugins,
     "jetbrains-app": jetbrains_app,
     "text-replacements": text_replacements,
+    "modifier-keys": modifier_keys,
 }
 
 if __name__ == "__main__":
