@@ -127,8 +127,9 @@ test_settings_capture() {
   make_old_mac
   run settings/capture-settings.sh
   expect_status 0
-  # p: settings without secrets, for the repo. b: the private backup.
-  local p="$PUBLIC_DIR" b="$BACKUP_DIR"
+  # p: system settings and dotfiles without secrets, a: each app's settings
+  # without secrets (both for the repo), b: the private backup.
+  local p="$SAVED_ROOT/settings/saved" a="$SAVED_ROOT/appsettings" b="$BACKUP_DIR"
 
   expect_file "$b/README.txt"
   expect_file "$p/system/defaults/com.apple.dock.plist"
@@ -148,9 +149,9 @@ test_settings_capture() {
   expect_no_path "$p/dotfiles/.ssh/id_ed25519"
   expect_no_path "$p/dotfiles/.config/opencode/node_modules"
 
-  expect_file "$p/apps/iterm2/com.googlecode.iterm2.plist"
+  expect_file "$a/iterm2/saved/com.googlecode.iterm2.plist"
 
-  local ws="$p/apps/webstorm/WebStorm2026.1" wsb="$b/apps/webstorm/WebStorm2026.1"
+  local ws="$a/webstorm/saved/WebStorm2026.1" wsb="$b/apps/webstorm/WebStorm2026.1"
   expect_eq "$(cat "$ws/options/editor.xml" 2>/dev/null)" new "newest WebStorm settings"
   expect_file "$ws/keymaps/Mine.xml"
   expect_file "$wsb/workspace/x.xml"
@@ -158,9 +159,9 @@ test_settings_capture() {
   expect_file "$ws/webstorm.vmoptions"
   expect_file "$wsb/options/recentProjects.xml"
   expect_no_path "$ws/options/recentProjects.xml"
-  expect_no_path "$p/apps/webstorm/WebStorm2024.3"
+  expect_no_path "$a/webstorm/saved/WebStorm2024.3"
   expect_no_path "$b/apps/webstorm/WebStorm2024.3"
-  expect_no_path "$p/apps/jetbrains/WebStorm2026.1"
+  expect_no_path "$a/jetbrains"
   local dir
   for dir in "$ws" "$wsb"; do
     expect_no_path "$dir/options/codex.oauth.xml"
@@ -176,12 +177,12 @@ test_settings_capture() {
   expect_file "$b/apps/webstorm/com.jetbrains.WebStorm.plist"
   expect_file "$b/apps/webstorm/acp-agents/installed.json"
   expect_no_path "$b/apps/plists/com.jetbrains.WebStorm.plist"
-  expect_file "$p/apps/jetbrains/PyCharm2026.1/options/editor.xml"
+  expect_file "$a/pycharm/saved/PyCharm2026.1/options/editor.xml"
 
-  expect_file "$p/apps/editors/Code/settings.json"
-  expect_line "$p/apps/editors/Code/extensions.txt" "esbenp.prettier-vscode"
+  expect_file "$a/vscode/saved/settings.json"
+  expect_line "$a/vscode/saved/extensions.txt" "esbenp.prettier-vscode"
 
-  local chrome="$p/browsers/Chrome"
+  local chrome="$a/chrome/saved"
   expect_line "$chrome/profiles.tsv" "Default	Personal"
   expect_file "$b/browsers/Chrome/Default/Bookmarks"
   expect_no_path "$chrome/Default/Bookmarks"
@@ -193,7 +194,8 @@ test_settings_capture() {
 
   expect_line "$b/apps/index.tsv" "com.tinyspeck.slackmacgap	Slack.app"
   expect_file "$b/apps/plists/com.tinyspeck.slackmacgap.plist"
-  expect_no_path "$p/apps/plists"
+  expect_no_path "$p/apps"
+  expect_no_path "$p/browsers"
   expect_no_path "$b/apps/plists/com.example.noprefs.plist"
   expect_no_path "$b/apps/plists/com.googlecode.iterm2.plist"
   expect_out "Edge: no profiles found"
@@ -211,9 +213,9 @@ test_settings_capture_cleans_plists_for_the_repo() {
   run settings/capture-settings.sh
   expect_status 0
   local keys
-  keys="$(plist_keys "$PUBLIC_DIR/system/defaults/com.apple.finder.plist")"
+  keys="$(plist_keys "$SAVED_ROOT/settings/saved/system/defaults/com.apple.finder.plist")"
   expect_eq "$keys" ShowPathbar "Finder settings without recent folders"
-  keys="$(plist_keys "$PUBLIC_DIR/system/currentHost/com.apple.controlcenter.plist")"
+  keys="$(plist_keys "$SAVED_ROOT/settings/saved/system/currentHost/com.apple.controlcenter.plist")"
   expect_eq "$keys" Bluetooth "Control Centre settings without the token"
 }
 
@@ -226,12 +228,12 @@ test_settings_capture_keeps_secrets_out_of_the_repo() {
   run settings/capture-settings.sh
   expect_status 0
   expect_file "$BACKUP_DIR/dotfiles/.zshrc"
-  expect_no_path "$PUBLIC_DIR/dotfiles/.zshrc"
+  expect_no_path "$SAVED_ROOT/settings/saved/dotfiles/.zshrc"
   expect_file "$BACKUP_DIR/apps/editors/Code/settings.json"
-  expect_no_path "$PUBLIC_DIR/apps/editors/Code/settings.json"
-  expect_file "$PUBLIC_DIR/dotfiles/.zprofile"
+  expect_no_path "$SAVED_ROOT/appsettings/vscode/saved/settings.json"
+  expect_file "$SAVED_ROOT/settings/saved/dotfiles/.zprofile"
   expect_file "$BACKUP_DIR/dotfiles/.npmrc"
-  expect_no_path "$PUBLIC_DIR/dotfiles/.npmrc"
+  expect_no_path "$SAVED_ROOT/settings/saved/dotfiles/.npmrc"
   expect_out "Kept out of the repo because they look like they hold a secret:"
   expect_out "dotfiles/.zshrc (line 2)"
   expect_out "apps/editors/Code/settings.json (line 1)"
@@ -260,12 +262,16 @@ test_settings_capture_replaces_earlier_backup() {
   make_old_mac
   run settings/capture-settings.sh
   echo stale > "$BACKUP_DIR/stale.txt"
-  echo stale > "$PUBLIC_DIR/stale.txt"
+  echo stale > "$SAVED_ROOT/settings/saved/stale.txt"
+  echo stale > "$SAVED_ROOT/appsettings/vscode/saved/stale.txt"
+  echo script > "$SAVED_ROOT/appsettings/vscode/capture.sh"
   run settings/capture-settings.sh
   expect_status 0
   expect_no_path "$BACKUP_DIR/stale.txt"
-  expect_no_path "$PUBLIC_DIR/stale.txt"
-  expect_file "$PUBLIC_DIR/system/defaults/com.apple.dock.plist"
+  expect_no_path "$SAVED_ROOT/settings/saved/stale.txt"
+  expect_no_path "$SAVED_ROOT/appsettings/vscode/saved/stale.txt"
+  expect_file "$SAVED_ROOT/appsettings/vscode/capture.sh"
+  expect_file "$SAVED_ROOT/settings/saved/system/defaults/com.apple.dock.plist"
 }
 
 test_settings_restore_everything() {
@@ -437,7 +443,7 @@ test_settings_restore_stops_on_ctrl_d() {
 test_settings_restore_needs_a_backup() {
   run settings/restore-settings.sh "$TEST_DIR/nothing" --yes
   expect_status 1
-  expect_out "No settings in $PUBLIC_DIR or $TEST_DIR/nothing"
+  expect_out "No settings in $SAVED_ROOT/settings/saved or $TEST_DIR/nothing"
 }
 
 test_settings_restore_needs_a_terminal_to_ask() {
@@ -456,13 +462,13 @@ test_webstorm_capture_on_its_own() {
   echo newer > "$SUPPORT/JetBrains/WebStorm2026.1/options/editor.xml"
   run appsettings/webstorm/capture.sh --with-plugins
   expect_status 0
-  local p="$PUBLIC_DIR" b="$BACKUP_DIR"
-  expect_eq "$(cat "$p/apps/webstorm/WebStorm2026.1/options/editor.xml" 2>/dev/null)" newer "refreshed WebStorm settings"
+  local p="$SAVED_ROOT/settings/saved" a="$SAVED_ROOT/appsettings" b="$BACKUP_DIR"
+  expect_eq "$(cat "$a/webstorm/saved/WebStorm2026.1/options/editor.xml" 2>/dev/null)" newer "refreshed WebStorm settings"
   expect_file "$b/apps/webstorm/WebStorm2026.1/workspace/x.xml"
   expect_file "$b/apps/webstorm/plugins/astro/lib/astro.jar"
-  expect_no_path "$p/apps/webstorm/plugins"
+  expect_no_path "$a/webstorm/saved/plugins"
   expect_file "$p/system/defaults/com.apple.dock.plist"
-  expect_file "$p/apps/iterm2/com.googlecode.iterm2.plist"
+  expect_file "$a/iterm2/saved/com.googlecode.iterm2.plist"
   expect_file "$b/apps/plists/com.tinyspeck.slackmacgap.plist"
 }
 
@@ -529,5 +535,5 @@ test_webstorm_restore_skips_open_webstorm() {
 test_webstorm_restore_needs_a_backup() {
   run appsettings/webstorm/restore.sh "$TEST_DIR/nothing" --yes
   expect_status 1
-  expect_out "No WebStorm settings in $PUBLIC_DIR/apps/webstorm or $TEST_DIR/nothing/apps/webstorm"
+  expect_out "No WebStorm settings in $SAVED_ROOT/appsettings/webstorm/saved or $TEST_DIR/nothing/apps/webstorm"
 }

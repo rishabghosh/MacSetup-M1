@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
 # Put back the settings capture-settings.sh saved on the old Mac: the ones in
-# the repo (settings/saved) together with the private backup copied over from
+# the repo (settings/saved and appsettings/<app>/saved) together with the
+# private backup copied over from
 # the old Mac. Without the private backup, only the repo's settings come back.
 # Run it after the apps are installed (appsetup/install-*.sh), because app
 # settings are only restored for apps that are there.
@@ -23,12 +24,12 @@ PRIVATE_DIR="$HOME/MacSettingsBackup"
 APPS_DIR="${APPS_DIR:-/Applications}"
 SUPPORT="$HOME/Library/Application Support"
 HERE="$(cd "$(dirname "$0")" && pwd)"
-PUBLIC_DIR="${PUBLIC_DIR:-$HERE/saved}"
+SAVED_ROOT="${SAVED_ROOT:-$(dirname "$HERE")}"
 YES=false
 for arg in "$@"; do
   case "$arg" in
     --yes | -y) YES=true ;;
-    --help | -h) sed -n '3,18p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --help | -h) sed -n '3,19p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     -*) echo "Unknown option: $arg" >&2; exit 1 ;;
     *) PRIVATE_DIR="$arg" ;;
   esac
@@ -115,7 +116,9 @@ copy_file() {
 # saved_path <path inside the backup>: where that file is kept, in the repo or
 # the private backup, for messages. BACKUP_DIR is a temporary merge of the two.
 saved_path() {
-  if [ -e "$PUBLIC_DIR/$1" ]; then echo "$PUBLIC_DIR/$1"; else echo "$PRIVATE_DIR/$1"; fi
+  local repo
+  repo="$(py repo-path "$SAVED_ROOT" "$1")"
+  if [ -e "$repo" ]; then echo "$repo"; else echo "$PRIVATE_DIR/$1"; fi
 }
 
 # ---------------------------------------------------------------------------
@@ -373,7 +376,7 @@ restore_browsers() {
 
   restore_safari
   info "Extensions and custom search engines for each profile are listed in"
-  info "$PUBLIC_DIR/browsers/<browser>/<profile>/extensions.tsv and search-engines.tsv."
+  info "$SAVED_ROOT/appsettings/<browser>/saved/<profile>/extensions.tsv and search-engines.tsv."
 }
 
 restore_safari() {
@@ -438,17 +441,17 @@ checklist() {
   - Wallpaper, Wi-Fi, Touch ID, notifications and privacy permissions.
   - Text replacements sync through iCloud. A copy is in $PRIVATE_DIR/system/text-replacements.tsv.
   - Browser extensions: they come back with browser sync, or install them from the
-    lists in $PUBLIC_DIR/browsers.
+    lists in $SAVED_ROOT/appsettings/<browser>/saved.
   - Firefox: sign in to Firefox sync. Its prefs.js and a bookmark backup are in $PRIVATE_DIR/browsers/Firefox.
-  - Power settings: compare with $PUBLIC_DIR/system/info.txt in System Settings → Battery.
+  - Power settings: compare with $SAVED_ROOT/settings/saved/system/info.txt in System Settings → Battery.
 EOF
 }
 
 # ---------------------------------------------------------------------------
 
-if [ ! -d "$PUBLIC_DIR/system" ] && [ ! -d "$PRIVATE_DIR/system" ] && [ ! -d "$PRIVATE_DIR/apps" ]; then
-  warn "No settings in $PUBLIC_DIR or $PRIVATE_DIR."
-  info "Run settings/capture-settings.sh on the old Mac, commit settings/saved, and copy"
+if [ ! -d "$SAVED_ROOT/settings/saved" ] && [ ! -d "$PRIVATE_DIR/system" ] && [ ! -d "$PRIVATE_DIR/apps" ]; then
+  warn "No settings in $SAVED_ROOT/settings/saved or $PRIVATE_DIR."
+  info "Run settings/capture-settings.sh on the old Mac, commit what it saved, and copy"
   info "the private backup it made there, or pass its path."
   exit 1
 fi
@@ -460,11 +463,10 @@ fi
 # One folder with both: the repo's settings, then the private backup's.
 BACKUP_DIR="$(mktemp -d)"
 trap 'rm -rf "$BACKUP_DIR"' EXIT
-for dir in "$PUBLIC_DIR" "$PRIVATE_DIR"; do
-  [ -d "$dir" ] && py copy "$dir" "$BACKUP_DIR" --exclude 'undo-*' >/dev/null
-done
+py gather "$SAVED_ROOT" "$BACKUP_DIR"
+[ -d "$PRIVATE_DIR" ] && py copy "$PRIVATE_DIR" "$BACKUP_DIR" --exclude 'undo-*' >/dev/null
 
-echo "Restoring settings from $PUBLIC_DIR"
+echo "Restoring settings from the repo ($SAVED_ROOT)"
 if [ -d "$PRIVATE_DIR/system" ] || [ -d "$PRIVATE_DIR/apps" ]; then
   info "and $PRIVATE_DIR"
   [ -f "$PRIVATE_DIR/README.txt" ] && info "$(head -1 "$PRIVATE_DIR/README.txt")"

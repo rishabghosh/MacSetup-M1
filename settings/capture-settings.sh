@@ -6,10 +6,13 @@
 # browsers (Chrome, Brave, Edge, Firefox, Safari) and the preferences of every
 # app in /Applications.
 #
-# This repo is public, so the capture is split in two:
-#   settings/saved/      settings without secrets, kept in the repo: system
-#                        settings, dotfiles, iTerm2, JetBrains and editor
-#                        settings, browser extension lists. Commit them.
+# This repo is public, so the capture is split in two. Settings without
+# secrets are kept in the repo. Commit them:
+#   appsettings/<app>/saved  each app's own settings: iTerm2, WebStorm and
+#                            other JetBrains IDEs, VS Code, Cursor, Antigravity,
+#                            and each browser's extension lists
+#   settings/saved           system settings and dotfiles
+# The rest stays out of the repo:
 #   ~/MacSettingsBackup  everything personal: bookmarks, app preferences,
 #                        fonts, ssh and aws config, and any file that looks
 #                        like it holds a secret. Copy that folder (or the .zip
@@ -17,14 +20,14 @@
 # Passwords, cookies, browser history and IDE login tokens are left out.
 #
 # Usage:
-#   ./settings/capture-settings.sh                    writes settings/saved and ~/MacSettingsBackup
+#   ./settings/capture-settings.sh                    writes the repo's saved settings and ~/MacSettingsBackup
 #   BACKUP_DIR=/Volumes/USB/settings ./settings/capture-settings.sh
 #
 # Safari's settings and bookmarks can only be read when the terminal app has
 # Full Disk Access (System Settings → Privacy & Security → Full Disk Access).
 #
-# Safe to re-run: settings/saved and an earlier backup in the same folder are
-# replaced.
+# Safe to re-run: the repo's saved settings and an earlier backup in the same
+# folder are replaced.
 # Written for the macOS default bash (3.2), so no associative arrays.
 
 set -u
@@ -32,7 +35,8 @@ set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(dirname "$HERE")"
 BACKUP_DIR="${BACKUP_DIR:-$HOME/MacSettingsBackup}"
-PUBLIC_DIR="${PUBLIC_DIR:-$HERE/saved}"
+# The repo the settings without secrets go in (tests use another folder).
+SAVED_ROOT="${SAVED_ROOT:-$REPO_DIR}"
 APPS_DIR="${APPS_DIR:-/Applications}"
 SUPPORT="$HOME/Library/Application Support"
 MARKER=".mac-settings-backup"
@@ -166,8 +170,8 @@ trap 'rm -rf "$STAGE"' EXIT
 
 split_capture() {
   bold "Sorting out what's safe for the repo..."
-  rm -rf "$PUBLIC_DIR"
-  py split "$STAGE" "$PUBLIC_DIR" "$BACKUP_DIR"
+  py clear "$SAVED_ROOT"
+  py split "$STAGE" "$SAVED_ROOT" "$BACKUP_DIR"
 }
 
 capture_system() {
@@ -383,7 +387,8 @@ write_readme() {
 Mac settings captured on $(date '+%Y-%m-%d') by MACSETUP-M1/settings/capture-settings.sh.
 
 This folder holds personal data. Keep it off GitHub and other public places.
-The settings without secrets are in the repo, in settings/saved. To put
+The settings without secrets are in the repo, in settings/saved and
+appsettings/<app>/saved. To put
 everything back on a new Mac, copy this folder to ~/MacSettingsBackup on it,
 then run:
 
@@ -411,7 +416,7 @@ zip_backup() {
 # ---------------------------------------------------------------------------
 
 if [ "${1:-}" = --help ] || [ "${1:-}" = -h ]; then
-  sed -n '3,28p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '3,31p' "$0" | sed 's/^# \{0,1\}//'
   exit 0
 fi
 
@@ -431,7 +436,7 @@ write_readme
 
 echo
 bold "Done."
-info "Commit settings/saved to the repo (check git diff first)."
+info "Commit settings/saved and appsettings/*/saved to the repo (check git diff first)."
 info "Private backup: $(du -sh "$BACKUP_DIR" | cut -f1) in $BACKUP_DIR"
 zip_backup
 info "Copy it to the new Mac yourself (AirDrop, USB drive, iCloud Drive), then"

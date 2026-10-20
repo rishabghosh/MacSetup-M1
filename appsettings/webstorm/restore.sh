@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
 # Put back the WebStorm settings capture.sh saved on the old Mac (the ones in
-# the repo, in settings/saved, together with the private backup), into the
+# the repo, in appsettings/webstorm/saved, together with the private backup),
+# into the
 # WebStorm installed here (its config folder may be a newer version), then
 # reinstall its plugins. Install WebStorm first (appsetup/install-coding.sh)
 # and keep it closed while this runs.
@@ -20,14 +21,14 @@ set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "$HERE/../.." && pwd)"
 BACKUP_DIR="$HOME/MacSettingsBackup"
-PUBLIC_DIR="${PUBLIC_DIR:-$REPO_DIR/settings/saved}"
+SAVED_ROOT="${SAVED_ROOT:-$REPO_DIR}"
 APPS_DIR="${APPS_DIR:-/Applications}"
 JETBRAINS="$HOME/Library/Application Support/JetBrains"
 YES=false
 for arg in "$@"; do
   case "$arg" in
     --yes | -y) YES=true ;;
-    --help | -h) sed -n '3,16p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --help | -h) sed -n '3,17p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     -*) echo "Unknown option: $arg" >&2; exit 1 ;;
     *) BACKUP_DIR="$arg" ;;
   esac
@@ -61,18 +62,18 @@ installed_webstorm() {
 # ---------------------------------------------------------------------------
 
 # One folder with both: the repo's WebStorm settings, then the private backup's.
-SAVED="$(mktemp -d)"
-trap 'rm -rf "$SAVED"' EXIT
-for dir in "$PUBLIC_DIR/apps/webstorm" "$BACKUP_DIR/apps/webstorm"; do
-  [ -d "$dir" ] && py copy "$dir" "$SAVED" >/dev/null
-done
+MERGED="$(mktemp -d)"
+trap 'rm -rf "$MERGED"' EXIT
+py gather "$SAVED_ROOT" "$MERGED"
+[ -d "$BACKUP_DIR/apps/webstorm" ] && py copy "$BACKUP_DIR/apps/webstorm" "$MERGED/apps/webstorm" >/dev/null
+SAVED="$MERGED/apps/webstorm"
 
 saved_config=""
 for dir in "$SAVED"/WebStorm*; do
   [ -d "$dir" ] && saved_config="$dir"
 done
 if [ -z "$saved_config" ]; then
-  warn "No WebStorm settings in $PUBLIC_DIR/apps/webstorm or $BACKUP_DIR/apps/webstorm."
+  warn "No WebStorm settings in $SAVED_ROOT/appsettings/webstorm/saved or $BACKUP_DIR/apps/webstorm."
   info "Run appsettings/webstorm/capture.sh on the old Mac and copy the backup here."
   exit 1
 fi

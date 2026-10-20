@@ -9,12 +9,12 @@
 # settings/capture-settings.sh runs this too, so you only need it on its own
 # to refresh the WebStorm part of an existing backup. Like that script, it
 # puts the settings without secrets (options, keymaps, code styles, colours,
-# templates, plugin list) in the repo, in settings/saved/apps/webstorm, and the
+# templates, plugin list) in the repo, in appsettings/webstorm/saved, and the
 # rest (workspaces, scratches, AI history, plugin files, macOS preferences) in
 # ~/MacSettingsBackup/apps/webstorm.
 #
 # Usage:
-#   ./appsettings/webstorm/capture.sh                 writes settings/saved and ~/MacSettingsBackup
+#   ./appsettings/webstorm/capture.sh                 writes appsettings/webstorm/saved and ~/MacSettingsBackup
 #   ./appsettings/webstorm/capture.sh --with-plugins  also copy the plugin files (can be >1 GB)
 #   BACKUP_DIR=/Volumes/USB/settings ./appsettings/webstorm/capture.sh
 #
@@ -29,7 +29,7 @@ set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "$HERE/../.." && pwd)"
 BACKUP_DIR="${BACKUP_DIR:-$HOME/MacSettingsBackup}"
-PUBLIC_DIR="${PUBLIC_DIR:-$REPO_DIR/settings/saved}"
+SAVED_ROOT="${SAVED_ROOT:-$REPO_DIR}"
 JETBRAINS="$HOME/Library/Application Support/JetBrains"
 MARKER=".mac-settings-backup"
 # capture-settings.sh sets STAGE_DIR and sorts everything out itself.
@@ -88,8 +88,9 @@ prepare_dest() {
 # On its own: replace the WebStorm part of the repo and the private backup.
 split_capture() {
   [ -n "${STAGE_DIR:-}" ] && return
-  rm -rf "$PUBLIC_DIR/apps/webstorm" "$BACKUP_DIR/apps/webstorm"
-  py split "$STAGE" "$PUBLIC_DIR" "$BACKUP_DIR"
+  py clear "$SAVED_ROOT" apps/webstorm
+  rm -rf "$BACKUP_DIR/apps/webstorm"
+  py split "$STAGE" "$SAVED_ROOT" "$BACKUP_DIR"
 }
 
 # ---------------------------------------------------------------------------

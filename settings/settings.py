@@ -358,13 +358,98 @@ def secret_in(data):
     return None
 
 
-def split(args):
-    """split <capture> <public> <private>
+# Where the repo keeps each app's settings: a folder in the capture and its
+# appsettings/<app>/saved folder. JetBrains IDEs other than WebStorm get one
+# folder each, named after the product (apps/jetbrains/PyCharm2026.1 goes to
+# appsettings/pycharm/saved/PyCharm2026.1). Everything else, the system
+# settings and dotfiles, goes to settings/saved.
+APP_DIRS = [
+    ("apps/webstorm", "webstorm"),
+    ("apps/iterm2", "iterm2"),
+    ("apps/editors/Code", "vscode"),
+    ("apps/editors/Cursor", "cursor"),
+    ("apps/editors/Antigravity", "antigravity"),
+    ("browsers/Chrome", "chrome"),
+    ("browsers/Brave", "brave"),
+    ("browsers/Edge", "edge"),
+    ("browsers/Firefox", "firefox"),
+    ("browsers/Safari", "safari"),
+]
 
-    Puts each file of the capture in the public folder when it's on the PUBLIC
-    list and nothing in it looks like a secret, and in the private folder
-    otherwise. Prints what went where, and which files were kept out of the
-    repo because they look like they hold a secret (never the secret itself)."""
+
+def repo_path(rel):
+    """Where a file of the capture goes in the repo, relative to its root."""
+    for folder, app in APP_DIRS:
+        if rel.startswith(folder + "/"):
+            return os.path.join("appsettings", app, "saved", rel[len(folder) + 1 :])
+    m = re.match(r"apps/jetbrains/(([A-Za-z]+)[^/]*)/(.*)", rel)
+    if m:
+        return os.path.join("appsettings", m.group(2).lower(), "saved", m.group(1), m.group(3))
+    return os.path.join("settings", "saved", rel)
+
+
+def capture_path(repo_rel):
+    """The reverse of repo_path: where a saved file of the repo belongs in a
+    capture. None if it isn't a saved setting."""
+    parts = repo_rel.split("/")
+    if parts[:2] == ["settings", "saved"] and len(parts) > 2:
+        return "/".join(parts[2:])
+    if parts[0] != "appsettings" or len(parts) < 4 or parts[2] != "saved":
+        return None
+    rest = "/".join(parts[3:])
+    for folder, app in APP_DIRS:
+        if parts[1] == app:
+            return folder + "/" + rest
+    return "apps/jetbrains/" + rest
+
+
+def saved_files(root):
+    """Every saved setting in the repo at root, as paths relative to it."""
+    for top in [os.path.join(root, "settings", "saved")] + sorted(glob.glob(os.path.join(root, "appsettings", "*", "saved"))):
+        for folder, dirs, files in os.walk(top):
+            dirs.sort()
+            for name in sorted(files):
+                yield os.path.relpath(os.path.join(folder, name), root)
+
+
+def gather(args):
+    """gather <repo> <dest>
+
+    Copies the settings saved in the repo (settings/saved and every
+    appsettings/<app>/saved) into dest, laid out like a capture."""
+    root, dest = args
+    for rel in saved_files(root):
+        target = capture_path(rel)
+        if target:
+            os.makedirs(os.path.dirname(os.path.join(dest, target)), exist_ok=True)
+            shutil.copy2(os.path.join(root, rel), os.path.join(dest, target))
+
+
+def clear(args):
+    """clear <repo> [<capture folder>]
+
+    Removes the settings saved in the repo, or only those that came from one
+    folder of a capture (like apps/webstorm), before a new capture."""
+    root, prefix = args[0], (args[1] if len(args) > 1 else "")
+    for rel in list(saved_files(root)):
+        target = capture_path(rel)
+        if target and (not prefix or target.startswith(prefix.rstrip("/") + "/")):
+            os.remove(os.path.join(root, rel))
+    for top in [os.path.join(root, "settings", "saved")] + glob.glob(os.path.join(root, "appsettings", "*", "saved")):
+        for folder, dirs, files in sorted(os.walk(top), reverse=True):
+            if not os.listdir(folder):
+                os.rmdir(folder)
+
+
+def split(args):
+    """split <capture> <repo> <private>
+
+    Puts each file of the capture in the repo when it's on the PUBLIC list and
+    nothing in it looks like a secret, and in the private folder otherwise.
+    In the repo, each app's settings go to appsettings/<app>/saved and the rest
+    to settings/saved (see repo_path). Prints what went where, and which files
+    were kept out of the repo because they look like they hold a secret (never
+    the secret itself)."""
     src, public, private = args
     n_public = n_private = 0
     held = []
@@ -382,7 +467,7 @@ def split(args):
                 if reason:
                     held.append(f"{rel} ({reason})")
                     data = None
-            dest = os.path.join(public if data is not None else private, rel)
+            dest = os.path.join(public, repo_path(rel)) if data is not None else os.path.join(private, rel)
             os.makedirs(os.path.dirname(dest), exist_ok=True)
             if data is None:
                 shutil.copy2(path, dest)
@@ -391,7 +476,7 @@ def split(args):
                 with open(dest, "wb") as f:
                     f.write(data)
                 n_public += 1
-    print(f"  {n_public} files without secrets in {public}")
+    print(f"  {n_public} files without secrets in the repo, in settings/saved and appsettings/*/saved")
     print(f"  {n_private} personal files in {private}")
     if held:
         print("  Kept out of the repo because they look like they hold a secret:")
@@ -415,7 +500,13 @@ if __name__ == "__main__":
         copy(sys.argv[2:])
     elif len(sys.argv) == 5 and sys.argv[1] == "split":
         split(sys.argv[2:])
+    elif len(sys.argv) == 4 and sys.argv[1] == "gather":
+        gather(sys.argv[2:])
+    elif len(sys.argv) in (3, 4) and sys.argv[1] == "clear":
+        clear(sys.argv[2:])
+    elif len(sys.argv) == 4 and sys.argv[1] == "repo-path":
+        print(os.path.join(sys.argv[2], repo_path(sys.argv[3])))
     elif len(sys.argv) == 3 and sys.argv[1] in COMMANDS:
         COMMANDS[sys.argv[1]](sys.argv[2])
     else:
-        sys.exit("usage: settings.py {copy,split," + ",".join(COMMANDS) + "} <path> ...")
+        sys.exit("usage: settings.py {copy,split,gather,clear,repo-path," + ",".join(COMMANDS) + "} <path> ...")
