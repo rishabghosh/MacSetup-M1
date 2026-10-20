@@ -1,7 +1,17 @@
 #!/bin/sh
 # Fake git: `git clone ... <url> <dir>` just creates <dir>.
 # GIT_FAIL="url ..." makes cloning those urls fail.
+# `git -C <dir> ls-files --error-unmatch -- <file>` succeeds only for paths
+# listed in GIT_TRACKED="<dir>/<file> ...".
 echo "git $*" >> "$STUB_LOG"
+if [ "$1" = -C ] && [ "$3" = ls-files ]; then
+  dir="$2" file=""
+  for arg; do file="$arg"; done
+  case " ${GIT_TRACKED:-} " in
+    *" $dir/$file "*) exit 0 ;;
+    *) exit 1 ;;
+  esac
+fi
 [ "$1" = clone ] || { echo "git stub: unsupported: $*" >&2; exit 1; }
 url="" dest=""
 for arg; do url="$dest"; dest="$arg"; done

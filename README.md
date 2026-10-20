@@ -8,6 +8,7 @@ Setup scripts for a fresh Apple Silicon Mac. This page covers everything: what t
 |---|---|
 | [appsetup/](appsetup/) | One app installer per category (Office, Coding, Entertainment, Gaming, Editing, Utils), plus a page per category for the apps you install by hand |
 | [clone-projects.sh](clone-projects.sh) | Sets up GitHub SSH, clones every project into `~/projects` and recreates their `.env` files |
+| [backup-envs.sh](backup-envs.sh) / [restore-envs.sh](restore-envs.sh) | Back up the projects' `.env` files to one gitignored file, and put them back after a fresh clone |
 | [claudesetup/](claudesetup/) | `setup-claude.sh` sets up Claude Desktop and Claude Code. Also holds your own skills and commands |
 | [settings/](settings/) | Captures the old Mac's settings and restores them on the new one. `settings/saved/` holds the ones without secrets |
 | [appsettings/](appsettings/) | Full settings capture and restore for single apps (WebStorm), run by `settings/` or on their own |
@@ -21,6 +22,12 @@ Setup scripts for a fresh Apple Silicon Mac. This page covers everything: what t
 
 ```bash
 ./settings/capture-settings.sh
+```
+
+Also back up the projects' `.env` files and copy `env-backup.tar.gz` somewhere safe (see [Back up and restore .env files](#back-up-and-restore-env-files)).
+
+```bash
+./backup-envs.sh
 ```
 
 **On the new Mac:**
@@ -47,7 +54,13 @@ Setup scripts for a fresh Apple Silicon Mac. This page covers everything: what t
 4. **Clone your projects.** See [Clone all projects](#clone-all-projects).
 
    ```bash
-   ~/projects/MACSETUP-M1/clone-projects.sh
+   ~/projects/MACSETUP-M1/clone-projects.sh --skip-env
+   ```
+
+5. **Put back the `.env` files.** Copy `env-backup.tar.gz` into `~/projects/MACSETUP-M1`, then run the restore. Run `clone-projects.sh` again without `--skip-env` afterwards if you have no backup, or to create any file the backup didn't have.
+
+   ```bash
+   ~/projects/MACSETUP-M1/restore-envs.sh
    ```
 
 5. **Set up Claude.** Run it after cloning, because two of the MCP servers belong to a single project folder. See [Set up Claude](#set-up-claude).
@@ -279,6 +292,29 @@ Running the script again is safe. Folders that already exist and `.env` files th
 
 Secret prompts are hidden while you type. You can press Enter to leave a value blank and fill it in later by editing the file. When several files share a value, like the TeeJutsu Shipmojo keys, you're asked for it only once. Every `.env` file is written with `600` permissions.
 
+## Back up and restore .env files
+
+On the old Mac:
+
+```bash
+~/projects/MACSETUP-M1/backup-envs.sh
+```
+
+- It saves every `.env` and `.env.*` file of the projects `clone-projects.sh` clones into `env-backup.tar.gz` in this repo. `.env.example`, files git tracks (like PrivatePdf's `.env.development`), `node_modules`, `.git` and virtualenvs are left out.
+- `env-backup.tar.gz` holds your secrets. It is gitignored and written with `600` permissions. Copy it somewhere safe yourself (a password manager attachment or an encrypted USB drive) and don't share it.
+- `ENV_BACKUP=/Volumes/USB/envs.tar.gz ./backup-envs.sh` writes somewhere else. Running it again replaces the earlier backup.
+
+On the new Mac, after cloning:
+
+```bash
+~/projects/MACSETUP-M1/restore-envs.sh
+```
+
+- It reads `env-backup.tar.gz` from this repo, or the path you pass: `./restore-envs.sh ~/Desktop/env-backup.tar.gz`.
+- Each file goes back to the same place in its project, with `600` permissions. Projects that aren't cloned yet are skipped, so you can run it again after cloning them.
+- `.env` files that already exist are left alone. `--force` replaces them with the backed-up ones.
+- Both scripts take `PROJECTS_DIR=~/somewhere`, like `clone-projects.sh`.
+
 ## Set up Claude
 
 `claudesetup/setup-claude.sh` sets up Claude Desktop and Claude Code. Run it after `clone-projects.sh`, because two of the MCP servers belong to a single project folder.
@@ -488,7 +524,7 @@ tests/run.sh
 
 Nothing is installed, cloned or downloaded. `brew`, `git`, `ssh`, `claude`, `uv`, `npx`, `open` and the other commands the scripts call are replaced by stubs in [tests/stubs](tests/stubs). Each stub only logs what it was asked to do, and the tests check that log. The container has no network, mounts the repo read-only, gives each test an empty home folder, and uses bash 3.2 like macOS. Prompts are answered through a pseudo-terminal, so the checklist, hidden secret prompts and the `.env` answers are tested too.
 
-- `tests/run.sh apps`: only the test files whose name contains `apps` (also `clone`, `claude`, `settings`). This skips shellcheck.
+- `tests/run.sh apps`: only the test files whose name contains `apps` (also `clone`, `envs`, `claude`, `settings`). This skips shellcheck.
 - `tests/run.sh --shell`: open a shell in the test image.
 
 What it can't cover: real Homebrew installs, the macOS installer windows, and GitHub sign-in. To check those, run the scripts on a fresh Mac or a macOS VM.
