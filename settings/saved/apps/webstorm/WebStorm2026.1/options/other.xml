@@ -1,0 +1,107 @@
+<application>
+  <component name="ActionHistoryManager">
+    <ids>
+      <option value="EditorToggleUseSoftWraps" />
+    </ids>
+  </component>
+  <component name="FileEditorProviderManager">{}</component>
+  <component name="LangManager">
+    <option name="languageName" value="Python" />
+  </component>
+  <component name="NotRoamableUiSettings">
+    <option name="fontSize" value="13.0" />
+    <option name="presentationModeIdeScale" value="1.75" />
+  </component>
+  <component name="PropertyService"><![CDATA[{
+  "keyToString": {
+    "AIHubNotificationManager.lastUsedLicenseType": "CODEX",
+    "CommitChangeListDialog.DETAILS_SPLITTER_PROPORTION_2": "0.6075269",
+    "DiffRequestProcessor.BottomComponentSplitter": "0.99",
+    "FindSplitterProportion": "0.34261242",
+    "GeneralSettings.initiallyConfigured": "true",
+    "InstalledPluginsSearchHistory": "codex\nbash\n/tag:Purchased\nanthropic\nanthropi",
+    "LAST_CALCULATED_COLOR_INDEX_KEY": "6",
+    "LAST_EXTRACTOR_SCRIPTS_CLEANUP_VERSION/data/aggregators": "WS-243.26574.96",
+    "LAST_EXTRACTOR_SCRIPTS_CLEANUP_VERSION/data/extractors": "WS-243.26574.96",
+    "MarketplacePluginsSearchHistory": "openai\nopen\nop\ncodex\nbash",
+    "NextRunPlatformUpdateBuild": "WS-261.27258.45",
+    "NextRunPlatformUpdateSelfBuild": "WS-261.22158.274",
+    "NextRunPlatformUpdateVersion": "2026.1.5",
+    "PlaywrightJavaScriptTestRunnerSupport.hideIgnoredTests": "true",
+    "PlaywrightJavaScriptTestRunnerSupport.hidePassedTests": "false",
+    "PlaywrightJavaScriptTestRunnerSupport.scrollToSource": "true",
+    "PlaywrightJavaScriptTestRunnerSupport.selectFirtsDefect": "true",
+    "RunOnceActivity.AIPromoWindowAdvisorPreheat": "true",
+    "RunOnceActivity.MCP settings loaded": "true",
+    "RunOnceActivity.TerminalFontSettingsService.fixStoredNonMonospacedFonts": "true",
+    "RunOnceActivity.TerminalOptionsProvider.TerminalEngineMigration.2026.1": "true",
+    "RunOnceActivity.VFSInitializationConditionsToFusReporter": "true",
+    "RunOnceActivity.git.modal.commit.toggle": "true",
+    "RunOnceActivity.llm.claude.code.byok.migration": "true",
+    "RunOnceActivity.llm.onboarding.window.launcher.v7": "true",
+    "RunOnceActivity.reset.auto.reparse.settings.to.default": "true",
+    "RunOnceActivity.terminal.escape.behavior.change.notification": "true",
+    "RunOnceActivity.trace.non.commercial.popup.id": "true",
+    "RunOnceActivity.webstorm.auto-popup.quick-doc.initialized": "true",
+    "SHELLCHECK.PATH": "/Users/rishabghosh/Library/Application Support/JetBrains/WebStorm2024.3/plugins/Shell Script/shellcheck",
+    "SettingsSearchHistory": "plugins\nplugin\nfont",
+    "TerminalCompletionPopupPromotion.shownCount": "3",
+    "WelcomeFeature.SHORT_WELCOME_GUIDE_SHOWN": "true",
+    "ask.about.ctrl.y.shortcut.v2": "true",
+    "bashpro.uninstalled.5": "true",
+    "do.not.show.again.docker.missing.shell.plugin.notification": "true",
+    "enter_selection_count": "5",
+    "evlsprt.243": "1963590bc40",
+    "evlsprt.261": "19d5ee8ac40",
+    "evlsprt3.243": "5",
+    "evlsprt3.261": "4",
+    "experimental.ui.on.first.startup": "true",
+    "experimental.ui.used.version": "261.22158.274",
+    "file.gist.reindex.count": "40",
+    "fileTypeChangedCounter": "25",
+    "fontSizeToResetConsole": "13.0",
+    "fontSizeToResetEditor": "13.0",
+    "git.working.trees.stop.showing.new.badge": "true",
+    "got.it.tooltip.js.debugger.terminal.start.debugger.from.url": "1",
+    "got.it.tooltip.new.terminal.promotion.243": "1",
+    "got.it.tooltip.speed.search.shown": "1",
+    "got.it.tooltip.typescript.engine.widget.TSandTSX.tooltip": "1",
+    "ide.islands.ab3": "true",
+    "ide.islands.new.darcula": "true",
+    "javascript.spte.engine.popup.was.shown": "true",
+    "llm.installer.auto.activation.executed": "true",
+    "llm.installer.last.toolwindow.state": "AI_ASSISTANT",
+    "migrated.non.roamable.values.from.general.settings": "true",
+    "power.save.mode": "true",
+    "previousColorScheme": "_@user_Dark",
+    "pycharm.pro.suggestion.dismissed": "true",
+    "python.confirm.package.installation": "false",
+    "registry.to.advanced.settings.migration.build": "WS-261.22158.274",
+    "toolwindow.showToolWindowsNames.ts": "2025-06-20T22:13:04.644051",
+    "trial.state.last.availability.check": "0",
+    "ts.lib.d.ts.version": "5.9.3"
+  },
+  "keyToStringList": {
+    "AIHubNotificationManager.lastAllNotifications": [],
+    "AIHubNotificationManager.notifications": [],
+    "AIHubNotificationManager.seenNotifications": [],
+    "fileTypeDetectors": [
+      "com.intellij.ide.scratch.ScratchFileServiceImpl$Detector",
+      "com.intellij.database.vfs.DbStorageFileType$Detector",
+      "com.intellij.javascript.debugger.sourcemap.SourceMapFileType$MyFileTypeDetector",
+      "com.jetbrains.nodejs.util.NodeFileTypeDetector$JavaScriptFileTypeDetector",
+      "com.jetbrains.nodejs.util.NodeFileTypeDetector$TypeScriptFileTypeDetector",
+      "com.intellij.docker.dockerFile.DockerFileTypeDetector",
+      "org.jetbrains.plugins.textmate.TextMateFileType$TextMateFileDetector"
+    ]
+  }
+}]]></component>
+  <component name="ReworkedTerminalUsage"><![CDATA[{
+  "enterKeyPressedTimes": 116,
+  "completionPopupShownTimes": 21,
+  "completionItemChosenTimes": 5,
+  "firstIdeSessionMoment": {
+    "type": "org.jetbrains.plugins.terminal.TerminalFirstIdeSessionMoment.BeforeTrackingStarted"
+  }
+}]]></component>
+</application>

@@ -1,0 +1,15 @@
+com.chesterccw.excelreader	ExcelReader
+org.jetbrains.plugins.astro	astro
+com.anthropic.code.plugin	claude-code-jetbrains-plugin
+ru.adelf.idea.dotenv	dotenv
+org.jetbrains.junie	ej
+org.jetbrains.completion.full.line	fullLine
+com.github.Joehaivo.icon-font-viewer	icon-font-viewer-1.1.8-base.jar
+com.intellij.ml.llm	ml-llm
+PythonCore	python-ce
+org.toml.lang	toml
+org.jetbrains.plugins.github	vcs-github
+org.jetbrains.plugins.gitlab	vcs-gitlab
+hg4idea	vcs-hg
+PerforceDirectPlugin	vcs-perforce
+Subversion	vcs-svn

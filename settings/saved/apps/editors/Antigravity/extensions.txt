@@ -1,0 +1,15 @@
+vscjava.vscode-java-pack
+astro-build.astro-vscode
+llvm-vs-code-extensions.vscode-clangd
+golang.go
+ms-python.vscode-python-envs
+ms-python.python
+vscjava.vscode-java-debug
+vscjava.vscode-java-test
+vscjava.vscode-gradle
+redhat.java
+shopify.ruby-lsp
+vscjava.vscode-java-dependency
+ms-python.debugpy
+vscjava.vscode-maven
+meta.pyrefly

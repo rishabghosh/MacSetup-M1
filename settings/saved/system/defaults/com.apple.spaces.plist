@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>SpacesDisplayConfiguration</key>
+	<dict>
+		<key>Management Data</key>
+		<dict>
+			<key>Age</key>
+			<real>71315.51250199997</real>
+			<key>Management Mode</key>
+			<integer>1</integer>
+			<key>Monitors</key>
+			<array>
+				<dict>
+					<key>Current Space</key>
+					<dict>
+						<key>ManagedSpaceID</key>
+						<integer>1</integer>
+						<key>id64</key>
+						<integer>1</integer>
+						<key>type</key>
+						<integer>0</integer>
+						<key>uuid</key>
+						<string></string>
+					</dict>
+					<key>Display Identifier</key>
+					<string>Main</string>
+					<key>Spaces</key>
+					<array>
+						<dict>
+							<key>ManagedSpaceID</key>
+							<integer>1</integer>
+							<key>id64</key>
+							<integer>1</integer>
+							<key>type</key>
+							<integer>0</integer>
+							<key>uuid</key>
+							<string></string>
+						</dict>
+					</array>
+				</dict>
+				<dict>
+					<key>Collapsed Space</key>
+					<dict>
+						<key>ManagedSpaceID</key>
+						<integer>2703</integer>
+						<key>id64</key>
+						<integer>2703</integer>
+						<key>type</key>
+						<integer>0</integer>
+						<key>uuid</key>
+						<string>36D00A43-A519-4AB2-AB99-8E25B77C449F</string>
+					</dict>
+					<key>Display Identifier</key>
+					<string>75590B6E-65C4-475A-A85B-15E6CC78373D</string>
+				</dict>
+				<dict>
+					<key>Collapsed Space</key>
+					<dict>
+						<key>ManagedSpaceID</key>
+						<integer>6089</integer>
+						<key>id64</key>
+						<integer>6089</integer>
+						<key>type</key>
+						<integer>0</integer>
+						<key>uuid</key>
+						<string>D2E9E80C-2AC4-4FAC-B837-893AC637AE56</string>
+					</dict>
+					<key>Display Identifier</key>
+					<string>3CDC7ECE-A5B6-48DA-A049-4ACD16B0F0F1</string>
+				</dict>
+			</array>
+			<key>Primary</key>
+			<dict>
+				<key>CreatedCount</key>
+				<integer>7</integer>
+				<key>DeletedCount</key>
+				<integer>8</integer>
+				<key>LifetimeEntryCount</key>
+				<integer>8</integer>
+				<key>LifetimeMax</key>
+				<real>4035.6182469166815</real>
+				<key>LifetimeMin</key>
+				<real>71.08745220839046</real>
+				<key>LifetimeSum</key>
+				<real>14650.564964374993</real>
+				<key>PersistedCount</key>
+				<integer>1</integer>
+			</dict>
+			<key>Secondary</key>
+			<dict>
+				<key>CreatedCount</key>
+				<integer>0</integer>
+				<key>DeletedCount</key>
+				<integer>0</integer>
+				<key>LifetimeEntryCount</key>
+				<integer>0</integer>
+				<key>LifetimeMax</key>
+				<real>0.0</real>
+				<key>LifetimeMin</key>
+				<real>0.0</real>
+				<key>LifetimeSum</key>
+				<real>0.0</real>
+				<key>PersistedCount</key>
+				<integer>0</integer>
+			</dict>
+		</dict>
+		<key>Space Properties</key>
+		<array>
+			<dict>
+				<key>name</key>
+				<string></string>
+				<key>windows</key>
+				<array>
+					<integer>40526</integer>
+					<integer>39582</integer>
+					<integer>41048</integer>
+					<integer>40501</integer>
+					<integer>39227</integer>
+					<integer>27287</integer>
+					<integer>35628</integer>
+					<integer>35633</integer>
+					<integer>35623</integer>
+					<integer>38600</integer>
+					<integer>37636</integer>
+					<integer>39816</integer>
+					<integer>39635</integer>
+					<integer>38907</integer>
+					<integer>20</integer>
+					<integer>19</integer>
+					<integer>18</integer>
+					<integer>30</integer>
+				</array>
+			</dict>
+		</array>
+	</dict>
+</dict>
+</plist>

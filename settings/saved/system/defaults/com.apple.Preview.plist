@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IKImageView2_UseNSDocumentViewAlignCenter</key>
+	<true/>
+	<key>NSNavLastUserSetHideExtensionButtonState</key>
+	<false/>
+	<key>NSNavPanelExpandedSizeForOpenMode</key>
+	<string>{880, 448}</string>
+	<key>NSSplitView Subview Frames NSColorPanelSplitView</key>
+	<array>
+		<string>0.000000, 0.000000, 224.000000, 258.000000, NO, NO</string>
+		<string>0.000000, 259.000000, 224.000000, 48.000000, NO, NO</string>
+	</array>
+	<key>NSToolbar Configuration CommonToolbar_v5.1</key>
+	<dict>
+		<key>TB Display Mode</key>
+		<integer>2</integer>
+		<key>TB Icon Size Mode</key>
+		<integer>1</integer>
+		<key>TB Is Shown</key>
+		<true/>
+		<key>TB Size Mode</key>
+		<integer>1</integer>
+	</dict>
+	<key>NSToolbar Configuration com.apple.NSColorPanel</key>
+	<dict>
+		<key>TB Is Shown</key>
+		<integer>1</integer>
+	</dict>
+	<key>NSWindow Frame NSColorPanel</key>
+	<string>0 97 224 278 0 0 1512 944 </string>
+	<key>NSWindow Frame PVImageCorrection</key>
+	<string>454 360 328 540 0 0 1512 949 </string>
+	<key>NSWindow Frame PVInspectorPanel</key>
+	<string>722 571 320 369 0 0 1512 944 </string>
+	<key>PDFKit2_UseNSDocumentViewAlignCenter</key>
+	<true/>
+	<key>PVContactSheetThumbnailSize</key>
+	<integer>120</integer>
+	<key>PVImageSizeResolutionUnit</key>
+	<integer>10</integer>
+	<key>PVImageSizeSizeUnit</key>
+	<integer>5</integer>
+	<key>PVInspectorPanelForDoctype_ImageDocument</key>
+	<string>PVInspectorAnnotations</string>
+	<key>PVInspectorPanelForDoctype_NoDocument</key>
+	<string>PVInspectorNoDocument</string>
+	<key>PVInspectorTabForMetaData</key>
+	<string>{General}</string>
+	<key>PVInspectorWindowOpenOnStart</key>
+	<false/>
+	<key>PVMarkupToolbarVisibleForImages</key>
+	<true/>
+	<key>PVMarkupToolbarVisibleForPDFs</key>
+	<false/>
+	<key>PVPDFLastSidebarWidth</key>
+	<real>160.0</real>
+	<key>PVSidebarViewModeForNewDocuments</key>
+	<integer>1</integer>
+	<key>com.apple.AnnotationKit.arrowHeadStyle</key>
+	<integer>2</integer>
+	<key>com.apple.AnnotationKit.brushStyle</key>
+	<integer>0</integer>
+	<key>com.apple.AnnotationKit.fillColor</key>
+	<data>
+	YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMS
+	AAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwYVSRudWxs1g0ODxAREhMU
+	FRUWF1YkY2xhc3NUY3NpZFNyZWRVYWxwaGFUYmx1ZVVncmVlboACEA8iP4AAACIAAAAA
+	Ij4YtejSGRobHFokY2xhc3NuYW1lWCRjbGFzc2VzV0NJQ29sb3KiGx1YTlNPYmplY3QI
+	ERokKTI3SUxRU1ddanF2eoCFi42PlJmeo663v8IAAAAAAAABAQAAAAAAAAAeAAAAAAAA
+	AAAAAAAAAAAAyw==
+	</data>
+	<key>com.apple.AnnotationKit.font</key>
+	<data>
+	YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMS
+	AAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGpCwwTHR4fICEnVSRudWxs0w0O
+	DxARElYkY2xhc3NfEBdOU0ZvbnREZXNjcmlwdG9yT3B0aW9uc18QGk5TRm9udERlc2Ny
+	aXB0b3JBdHRyaWJ1dGVzgAgSgAAAAIAC0xQVDRYZHFdOUy5rZXlzWk5TLm9iamVjdHOi
+	FxiAA4AEohobgAWABoAHXxATTlNGb250U2l6ZUF0dHJpYnV0ZV8QE05TRm9udE5hbWVB
+	dHRyaWJ1dGUjQDgAAAAAAABZSGVsdmV0aWNh0iIjJCVaJGNsYXNzbmFtZVgkY2xhc3Nl
+	c1xOU0RpY3Rpb25hcnmiJCZYTlNPYmplY3TSIiMoKV8QEE5TRm9udERlc2NyaXB0b3Ki
+	KiZfEBBOU0ZvbnREZXNjcmlwdG9yAAgAEQAaACQAKQAyADcASQBMAFEAUwBdAGMAagBx
+	AIsAqACqAK8AsQC4AMAAywDOANAA0gDVANcA2QDbAPEBBwEQARoBHwEqATMBQAFDAUwB
+	UQFkAWcAAAAAAAACAQAAAAAAAAArAAAAAAAAAAAAAAAAAAABeg==
+	</data>
+	<key>com.apple.AnnotationKit.hasShadow</key>
+	<false/>
+	<key>com.apple.AnnotationKit.highlightStyle</key>
+	<integer>765200</integer>
+	<key>com.apple.AnnotationKit.strokeColor</key>
+	<data>
+	YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMS
+	AAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwXVSRudWxs1g0ODxAREhMU
+	FRYVFVYkY2xhc3NUY3NpZFNyZWRVYWxwaGFUYmx1ZVVncmVlboACEA8iAAAAACI/gAAA
+	0hgZGhtaJGNsYXNzbmFtZVgkY2xhc3Nlc1dDSUNvbG9yohocWE5TT2JqZWN0CBEaJCky
+	N0lMUVNXXWpxdnqAhYuNj5SZnqmyur0AAAAAAAABAQAAAAAAAAAdAAAAAAAAAAAAAAAA
+	AAAAxg==
+	</data>
+	<key>com.apple.AnnotationKit.strokeIsDashed</key>
+	<false/>
+	<key>com.apple.AnnotationKit.strokeWidth</key>
+	<real>5.0</real>
+	<key>com.apple.AnnotationKit.textAttributes</key>
+	<data>
+	e1xydGYxXGFuc2lcYW5zaWNwZzEyNTJcY29jb2FydGYyODcwClxjb2NvYXRleHRzY2Fs
+	aW5nMFxjb2NvYXBsYXRmb3JtMHtcZm9udHRibFxmMFxmc3dpc3NcZmNoYXJzZXQwIEhl
+	bHZldGljYTt9CntcY29sb3J0Ymw7XHJlZDI1NVxncmVlbjI1NVxibHVlMjU1O1xyZWQy
+	NTJcZ3JlZW40M1xibHVlNDU7fQp7XCpcZXhwYW5kZWRjb2xvcnRibDs7XGNzc3JnYlxj
+	MTAwMDAwXGMyNzA1OVxjMjI3NDU7fQpccGFyZFxwYXJkaXJuYXR1cmFsXHFjXHBhcnRp
+	Z2h0ZW5mYWN0b3IwCgpcZjBcZnM0OCBcY2YyIGF9
+	</data>
+	<key>com.apple.AnnotationKit.userDefaultsVersion</key>
+	<integer>1</integer>
+	<key>com.apple.imagekit.lastresolution</key>
+	<integer>72</integer>
+	<key>com.apple.imagekit.lastselectedfiletype</key>
+	<string>public.png</string>
+</dict>
+</plist>

@@ -7,10 +7,14 @@
 # installed plugins, its macOS preferences and the AI agents it has set up.
 #
 # settings/capture-settings.sh runs this too, so you only need it on its own
-# to refresh the WebStorm part of an existing backup.
+# to refresh the WebStorm part of an existing backup. Like that script, it
+# puts the settings without secrets (options, keymaps, code styles, colours,
+# templates, plugin list) in the repo, in settings/saved/apps/webstorm, and the
+# rest (workspaces, scratches, AI history, plugin files, macOS preferences) in
+# ~/MacSettingsBackup/apps/webstorm.
 #
 # Usage:
-#   ./appsettings/webstorm/capture.sh                 writes ~/MacSettingsBackup/apps/webstorm
+#   ./appsettings/webstorm/capture.sh                 writes settings/saved and ~/MacSettingsBackup
 #   ./appsettings/webstorm/capture.sh --with-plugins  also copy the plugin files (can be >1 GB)
 #   BACKUP_DIR=/Volumes/USB/settings ./appsettings/webstorm/capture.sh
 #
@@ -25,9 +29,12 @@ set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "$HERE/../.." && pwd)"
 BACKUP_DIR="${BACKUP_DIR:-$HOME/MacSettingsBackup}"
+PUBLIC_DIR="${PUBLIC_DIR:-$REPO_DIR/settings/saved}"
 JETBRAINS="$HOME/Library/Application Support/JetBrains"
 MARKER=".mac-settings-backup"
-DEST="$BACKUP_DIR/apps/webstorm"
+# capture-settings.sh sets STAGE_DIR and sorts everything out itself.
+# On its own, this script captures into a folder of its own and sorts it.
+STAGE="${STAGE_DIR:-}"
 WITH_PLUGINS=false
 
 # Not settings: caches and state WebStorm rebuilds, plus secrets.
@@ -44,7 +51,7 @@ py() { python3 -I "$REPO_DIR/settings/settings.py" "$@"; }
 for arg in "$@"; do
   case "$arg" in
     --with-plugins) WITH_PLUGINS=true ;;
-    --help | -h) sed -n '3,21p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --help | -h) sed -n '3,27p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "Unknown option: $arg" >&2; exit 1 ;;
   esac
 done
@@ -58,6 +65,10 @@ config_dir() {
 }
 
 prepare_dest() {
+  if [ -n "${STAGE_DIR:-}" ]; then
+    DEST="$STAGE/apps/webstorm"
+    return
+  fi
   case "$BACKUP_DIR" in
     "$REPO_DIR" | "$REPO_DIR"/*)
       warn "$BACKUP_DIR is inside this repo, which is public. Pick a folder outside it."
@@ -69,7 +80,16 @@ prepare_dest() {
   fi
   mkdir -p "$BACKUP_DIR" || exit 1
   touch "$BACKUP_DIR/$MARKER"
-  rm -rf "$DEST"
+  STAGE="$(mktemp -d)"
+  trap 'rm -rf "$STAGE"' EXIT
+  DEST="$STAGE/apps/webstorm"
+}
+
+# On its own: replace the WebStorm part of the repo and the private backup.
+split_capture() {
+  [ -n "${STAGE_DIR:-}" ] && return
+  rm -rf "$PUBLIC_DIR/apps/webstorm" "$BACKUP_DIR/apps/webstorm"
+  py split "$STAGE" "$PUBLIC_DIR" "$BACKUP_DIR"
 }
 
 # ---------------------------------------------------------------------------
@@ -111,3 +131,4 @@ if [ -f "$JETBRAINS/acp-agents/installed.json" ]; then
   cp "$JETBRAINS/acp-agents/installed.json" "$DEST/acp-agents/"
   info "AI agents (acp-agents)"
 fi
+split_capture

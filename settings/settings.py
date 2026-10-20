@@ -1,5 +1,6 @@
 """Helpers for capture-settings.sh and restore-settings.sh that are easier in
-Python than in bash: reading JSON, SQLite and zipped plugin files.
+Python than in bash: reading JSON, SQLite and zipped plugin files, and
+splitting a capture between the public repo and the private backup.
 
     python3 -I settings.py <command> <args>
 
@@ -8,9 +9,11 @@ input is missing or unreadable, so the shell scripts can skip it quietly.
 """
 
 import filecmp
+import fnmatch
 import glob
 import json
 import os
+import plistlib
 import re
 import shutil
 import sqlite3
@@ -163,11 +166,16 @@ def text_replacements(db):
         print(f"{clean(shortcut)}\t{clean(phrase)}")
 
 
+def excluded(name, patterns):
+    return any(fnmatch.fnmatchcase(name, p) for p in patterns)
+
+
 def copy(args):
     """copy <source> <dest> [--undo <folder>] [--exclude <name>]... [--keep-existing]
 
     Copies a file, or a folder's contents, onto dest. Files and folders named
-    in --exclude are skipped wherever they are. Files that differ at dest are
+    in --exclude (a name or a pattern like undo-*) are skipped wherever they
+    are. Files that differ at dest are
     replaced, after being saved under the undo folder, or left alone with
     --keep-existing. Prints how many files it copied."""
     src, dest, rest = args[0], args[1], args[2:]
@@ -188,9 +196,9 @@ def copy(args):
     else:
         pairs = []
         for root, dirs, files in os.walk(src):
-            dirs[:] = sorted(d for d in dirs if d not in exclude)
+            dirs[:] = sorted(d for d in dirs if not excluded(d, exclude))
             for name in sorted(files):
-                if name in exclude:
+                if excluded(name, exclude):
                     continue
                 rel = os.path.relpath(os.path.join(root, name), src)
                 pairs.append((rel, os.path.join(root, name), os.path.join(dest, rel)))
@@ -212,6 +220,185 @@ def copy(args):
     print(copied)
 
 
+# ---------------------------------------------------------------------------
+# Splitting a capture: what has no secrets goes in the repo, which is public,
+# and the rest goes to the private backup.
+
+# Settings that may go in the repo, as paths inside the capture. * matches
+# within one folder and ** across folders.
+JETBRAINS_PUBLIC = [
+    "options/**", "keymaps/**", "codestyles/**", "colors/**", "templates/**", "fileTemplates/**",
+    "inspection/**", "quicklists/**", "tools/**", "plugins.tsv", "disabled_plugins.txt", "*.vmoptions",
+]
+PUBLIC = [
+    "system/defaults/*.plist",
+    "system/currentHost/*.plist",
+    "system/Services/**",
+    "system/info.txt",
+    "dotfiles/**",
+    "apps/iterm2/**",
+    "apps/editors/**",
+    "browsers/*/profiles.tsv",
+    "browsers/*/*/extensions.tsv",
+    "browsers/*/*/search-engines.tsv",
+    "browsers/Firefox/*/user.js",
+    "browsers/Firefox/*/chrome/**",
+] + [f"apps/{app}/*/{path}" for app in ("webstorm", "jetbrains") for path in JETBRAINS_PUBLIC]
+
+# Exceptions that stay private: credentials-adjacent dotfiles, and JetBrains
+# options files that hold accounts, tokens, recent projects or usage data
+# rather than settings.
+PRIVATE = [
+    "dotfiles/.ssh/**",
+    "dotfiles/.aws/**",
+    "dotfiles/.npmrc",
+]
+JETBRAINS_STATE = re.compile(
+    r"recent|trusted-paths|statistic|usage|updates|summary|eventlog|feedback|survey|promo|quota"
+    r"|termsofservice|settingssync|licen[cs]e|github|gitlab|copilot|openrouter|account|security"
+    r"|oauth|token|passw|proxy|window\.state|pluginfreezes|\.local\.xml$",
+    re.I,
+)
+
+# Plist keys dropped before a plist goes in the repo. SECRET_KEY always;
+# HISTORY_KEY when it holds a list, text or data (recent folders, recent apps)
+# rather than an on/off setting like show-recents.
+SECRET_KEY = re.compile(r"token|secret|passw|credential|cookie|licen[cs]e|serial|auth(?!or)|api.?key", re.I)
+HISTORY_KEY = re.compile(r"recent|history|lastrootdirectory|bookmark$", re.I)
+
+# Text that means a file holds a secret, so it stays out of the repo.
+SECRET_TEXT = [
+    re.compile(p)
+    for p in [
+        r"-----BEGIN [A-Z ]*PRIVATE KEY-----",
+        r"\bAKIA[0-9A-Z]{16}\b",  # AWS access key
+        r"\bgh[pousr]_[A-Za-z0-9]{30,}",  # GitHub token
+        r"\bgithub_pat_\w{20,}",
+        r"\bsk-[A-Za-z0-9_-]{20,}",  # OpenAI / Anthropic key
+        r"\bxox[abprs]-[\w-]{10,}",  # Slack token
+        r"\bAIza[\w-]{35}",  # Google API key
+        r"\bnpm_[A-Za-z0-9]{36}\b",
+        r"\beyJ[\w-]{10,}\.[\w-]{10,}\.[\w-]{10,}",  # JWT
+        r"://[^/\s:@'\"<>]+:[^/\s@'\"<>]+@",  # password in a URL
+        r"(?i)_authToken\s*=",
+        # NAME=value or "name": "value" where the name says it's a secret and
+        # the value isn't a number, true/false or a $VARIABLE.
+        r"(?i)[\w.-]*(?:token|secret|passw(?:or)?d|api[_-]?key|access[_-]?key|private[_-]?key|auth)[\w.-]*"
+        r"[\"']?\s*[:=]\s*[\"']?(?![\d.]+\b|true\b|false\b|null\b|\$)[^\s\"',;<>{}\[\]]{8,}",
+        # <option name="token" value="..."/> in JetBrains files
+        r"(?i)name=\"[^\"]*(?:token|secret|passw|api[_-]?key)[^\"]*\"\s+value=\"[^\"]{8,}\"",
+        # <key>...token...</key><string> in plists
+        r"(?i)<key>[^<]*(?:token|secret|passw|api[_-]?key)[^<]*</key>\s*<(?:string|data)>",
+    ]
+]
+
+
+def glob_regex(pattern):
+    out, i = "", 0
+    while i < len(pattern):
+        if pattern.startswith("**", i):
+            out, i = out + ".*", i + 2
+        elif pattern[i] == "*":
+            out, i = out + "[^/]*", i + 1
+        else:
+            out, i = out + re.escape(pattern[i]), i + 1
+    return re.compile(out + r"\Z")
+
+
+PUBLIC_RE = [glob_regex(p) for p in PUBLIC]
+PRIVATE_RE = [glob_regex(p) for p in PRIVATE]
+
+
+def is_public(rel):
+    if any(r.match(rel) for r in PRIVATE_RE):
+        return False
+    if re.match(r"apps/(webstorm|jetbrains)/[^/]+/options/", rel) and JETBRAINS_STATE.search(os.path.basename(rel)):
+        return False
+    return any(r.match(rel) for r in PUBLIC_RE)
+
+
+def clean_plist(value):
+    """The plist without secret keys, recent files and file bookmarks."""
+    if isinstance(value, dict):
+        out = {}
+        for key, item in value.items():
+            if SECRET_KEY.search(key):
+                continue
+            if HISTORY_KEY.search(key) and isinstance(item, (list, dict, str, bytes)):
+                continue
+            if isinstance(item, bytes) and item[:4] in (b"book", b"alis"):
+                continue
+            out[key] = clean_plist(item)
+        return out
+    if isinstance(value, list):
+        return [clean_plist(item) for item in value if not (isinstance(item, bytes) and item[:4] in (b"book", b"alis"))]
+    return value
+
+
+def public_bytes(path):
+    """The file as it goes in the repo: plists cleaned and saved as XML so
+    they diff well. None if a plist can't be read."""
+    with open(path, "rb") as f:
+        data = f.read()
+    if not path.endswith(".plist"):
+        return data
+    try:
+        return plistlib.dumps(clean_plist(plistlib.loads(data)), fmt=plistlib.FMT_XML)
+    except Exception:  # plistlib raises several kinds on odd plists
+        return None
+
+
+def secret_in(data):
+    """Where the first secret-looking text is, as "line N", or None."""
+    text = data.decode("utf-8", "ignore")
+    for pattern in SECRET_TEXT:
+        m = pattern.search(text)
+        if m:
+            return "line %d" % (text.count("\n", 0, m.start()) + 1)
+    return None
+
+
+def split(args):
+    """split <capture> <public> <private>
+
+    Puts each file of the capture in the public folder when it's on the PUBLIC
+    list and nothing in it looks like a secret, and in the private folder
+    otherwise. Prints what went where, and which files were kept out of the
+    repo because they look like they hold a secret (never the secret itself)."""
+    src, public, private = args
+    n_public = n_private = 0
+    held = []
+    for root, dirs, files in os.walk(src):
+        dirs.sort()
+        for name in sorted(files):
+            if name == ".DS_Store":
+                continue
+            path = os.path.join(root, name)
+            rel = os.path.relpath(path, src)
+            data = None
+            if is_public(rel):
+                data = public_bytes(path)
+                reason = secret_in(data) if data is not None else "unreadable plist"
+                if reason:
+                    held.append(f"{rel} ({reason})")
+                    data = None
+            dest = os.path.join(public if data is not None else private, rel)
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            if data is None:
+                shutil.copy2(path, dest)
+                n_private += 1
+            else:
+                with open(dest, "wb") as f:
+                    f.write(data)
+                n_public += 1
+    print(f"  {n_public} files without secrets in {public}")
+    print(f"  {n_private} personal files in {private}")
+    if held:
+        print("  Kept out of the repo because they look like they hold a secret:")
+        for item in held:
+            print("    " + item)
+
+
 COMMANDS = {
     "chromium-profiles": chromium_profiles,
     "chromium-extensions": chromium_extensions,
@@ -226,7 +413,9 @@ COMMANDS = {
 if __name__ == "__main__":
     if len(sys.argv) >= 4 and sys.argv[1] == "copy":
         copy(sys.argv[2:])
+    elif len(sys.argv) == 5 and sys.argv[1] == "split":
+        split(sys.argv[2:])
     elif len(sys.argv) == 3 and sys.argv[1] in COMMANDS:
         COMMANDS[sys.argv[1]](sys.argv[2])
     else:
-        sys.exit("usage: settings.py {copy," + ",".join(COMMANDS) + "} <path> ...")
+        sys.exit("usage: settings.py {copy,split," + ",".join(COMMANDS) + "} <path> ...")

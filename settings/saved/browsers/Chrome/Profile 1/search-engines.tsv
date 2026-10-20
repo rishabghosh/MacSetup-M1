@@ -1,0 +1,5 @@
+drive.google.com	Google Drive	https://drive.google.com/drive/search?q={searchTerms}
+github.com	GitHub	https://github.com/search?q={searchTerms}&ref=opensearch
+maps.google.com	Google Maps	https://www.google.com/maps/search/{searchTerms}?hl=en&source=opensearch
+openstreetmap.org	OpenStreetMap	https://www.openstreetmap.org/search?query={searchTerms}
+youtube.com	YouTube	https://www.youtube.com/results?search_query={searchTerms}&page={startPage?}&utm_source=opensearch

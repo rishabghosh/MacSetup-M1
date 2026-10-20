@@ -1,0 +1,14 @@
+airbnb.co.in	Airbnb	https://www.airbnb.com/s?location={searchTerms}
+drive.google.com	Google Drive	https://drive.google.com/drive/search?q={searchTerms}
+github.com	GitHub	https://github.com/search?q={searchTerms}&ref=opensearch
+github.com.	GitHub	https://github.com/search?q={searchTerms}&ref=opensearch
+groww.in	Groww	https://groww.in/search?q={searchTerms}
+kissanime.rest	kissanime.rest	https://kissanime.rest/?keyword={searchTerms}&key_pres=&link_alias=&keyword_search_replace=
+maps.google.com	Google Maps	https://www.google.com/maps/search/{searchTerms}?hl=en&source=opensearch
+moneycontrol.com	moneycontrol.com	https://www.moneycontrol.com/?search_data=&cid=&mbsearch_str=&topsearch_type=1&search_str={searchTerms}
+music.youtube.com	YouTube Music	https://music.youtube.com/search?q={searchTerms}&utm_source=opensearch
+pirateproxy-bay.com	pirateproxy-bay.com	https://www1.thepiratebay3.to/s/?q={searchTerms}
+repo.new	GitHub	https://github.com/search?q={searchTerms}&ref=opensearch
+tickertape.in	Tickertape	https://www.tickertape.in/?q={searchTerms}
+udemy.com	udemy.com	https://www.udemy.com/courses/search/?src=ukw&q={searchTerms}
+yts.mx	YTS Torrents - YTS.MX - The Official Home of YIFY Movie Torrent Downloads	https://yts.mx/browse-movies/{searchTerms}/all/all/0/latest/0/all

@@ -9,7 +9,8 @@ Setup scripts for a fresh Apple Silicon Mac. This page covers everything: what t
 | [appsetup/](appsetup/) | One app installer per category (Office, Coding, Entertainment, Gaming, Editing, Utils), plus a page per category for the apps you install by hand |
 | [clone-projects.sh](clone-projects.sh) | Sets up GitHub SSH, clones every project into `~/projects` and recreates their `.env` files |
 | [claudesetup/](claudesetup/) | `setup-claude.sh` sets up Claude Desktop and Claude Code. Also holds your own skills and commands |
-| [settings/](settings/) | Captures the old Mac's settings and restores them on the new one |
+| [settings/](settings/) | Captures the old Mac's settings and restores them on the new one. `settings/saved/` holds the ones without secrets |
+| [appsettings/](appsettings/) | Full settings capture and restore for single apps (WebStorm), run by `settings/` or on their own |
 | [useful-commands.md](useful-commands.md) | Handy commands from the old Mac's shell history |
 | [installed-apps-report.md](installed-apps-report.md) | What was installed on the old Mac, and how |
 | [tests/](tests/) | Shellcheck and stubbed tests for every script |
@@ -429,7 +430,7 @@ The tables only list the values the script asks for. The rest of each file (path
 
 ## Mac settings
 
-`settings/capture-settings.sh` saves the old Mac's settings, and `settings/restore-settings.sh` puts them back on the new one. It covers macOS system settings, shell dotfiles, iTerm2, JetBrains IDEs, VS Code and Cursor, browsers (Chrome, Brave, Edge, Firefox, Safari) and the preferences of every app in `/Applications`.
+`settings/capture-settings.sh` saves the old Mac's settings, and `settings/restore-settings.sh` puts them back on the new one. It covers macOS system settings, shell dotfiles, iTerm2, WebStorm, other JetBrains IDEs, VS Code and Cursor, browsers (Chrome, Brave, Edge, Firefox, Safari) and the preferences of every app in `/Applications`.
 
 On the old Mac:
 
@@ -437,8 +438,11 @@ On the old Mac:
 ./settings/capture-settings.sh
 ```
 
-- It writes to `~/MacSettingsBackup` (and a `.zip` next to it), outside this repo, because the backup holds personal data and the repo is public. Copy that folder to the new Mac yourself. `BACKUP_DIR=/Volumes/USB/settings ./settings/capture-settings.sh` writes somewhere else.
-- Passwords, cookies, browser history and IDE login tokens are left out.
+- This repo is public, so the capture is split in two:
+  - [settings/saved/](settings/saved/), in the repo: settings without secrets. That's System Settings (Dock, Finder, keyboard, trackpad, menu bar, shortcuts), Quick Actions, shell and git dotfiles, iTerm2, WebStorm and other JetBrains settings (options, keymaps, code styles, colours, templates, plugin list), VS Code and Cursor settings and extensions, and each browser profile's extensions and custom search engines. Commit it after a capture.
+  - `~/MacSettingsBackup` (and a `.zip` next to it), outside the repo: everything personal. That's bookmarks, browser preferences, the preferences of every app in `/Applications`, fonts, text replacements, `~/.ssh/config`, `~/.aws/config`, `~/.npmrc`, WebStorm's workspaces and scratches, and JetBrains files with accounts or recent projects. Copy that folder to the new Mac yourself. `BACKUP_DIR=/Volumes/USB/settings ./settings/capture-settings.sh` writes it somewhere else.
+- Before a file goes in the repo, it's checked for secrets: API keys and tokens (`sk-…`, `ghp_…`, `AKIA…`, `xox…`, JWTs), private keys, passwords in URLs, and lines like `API_KEY=…` or `"token": "…"`. A file that has one goes to `~/MacSettingsBackup` instead, and the capture lists it. Plists lose recent files and folders, file bookmarks, and any key named like a token, password or licence.
+- Passwords, cookies, browser history and IDE login tokens are left out of both.
 - Safari's bookmarks are only saved when your terminal app has Full Disk Access (System Settings → Privacy & Security → Full Disk Access).
 
 On the new Mac, after the apps are installed:
@@ -447,10 +451,28 @@ On the new Mac, after the apps are installed:
 ./settings/restore-settings.sh
 ```
 
-- It asks about each part (system settings, dotfiles, iTerm2, ...) in turn. `--yes` restores everything without asking. Pass a folder to restore from somewhere other than `~/MacSettingsBackup`.
+- It restores the settings in `settings/saved` together with `~/MacSettingsBackup`. Without the private backup, only the repo's settings come back. Pass a folder to use a private backup somewhere else.
+- It asks about each part (system settings, dotfiles, iTerm2, ...) in turn. `--yes` restores everything without asking.
 - An app's settings are only restored for apps that are installed and closed, so run it from Terminal rather than iTerm2.
 - Anything it replaces is saved first to `<backup folder>/undo-<time>`, so you can copy it back.
 - IntelliJ IDEA, IntelliJ IDEA CE and PyCharm get your WebStorm settings (keymaps, code styles, colours, options) and plugins when the backup has none of their own. WebStorm-only plugins, such as the JavaScript ones, may not install in IDEA CE.
+
+### WebStorm
+
+`appsettings/webstorm/` saves all of WebStorm's settings, not just the options: keymaps, code styles, colour schemes, live and file templates, scratches, per-project workspaces and tasks, database drivers, `webstorm.vmoptions`, the AI agents it has set up, its macOS preferences and the list of installed plugins. Caches, logs, usage statistics, the settings-sync repo, login tokens and licence keys stay behind; sign in to your JetBrains account to activate.
+
+`capture-settings.sh` and `restore-settings.sh` run these scripts for you. The settings without secrets go to `settings/saved/apps/webstorm` and the rest (workspaces, scratches, AI history, plugin files, macOS preferences) to `~/MacSettingsBackup/apps/webstorm`. To refresh or restore only WebStorm:
+
+```bash
+./appsettings/webstorm/capture.sh
+```
+
+```bash
+./appsettings/webstorm/restore.sh
+```
+
+- `capture.sh --with-plugins` also copies the plugin files themselves (over 1 GB with the AI plugins), for plugins that aren't on the JetBrains Marketplace. Without it, `restore.sh` reinstalls the plugins from the list.
+- The settings go into whichever WebStorm version is installed on the new Mac. Keep WebStorm closed while `restore.sh` runs.
 
 ## Useful commands
 

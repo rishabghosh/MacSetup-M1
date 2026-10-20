@@ -6,19 +6,25 @@
 # browsers (Chrome, Brave, Edge, Firefox, Safari) and the preferences of every
 # app in /Applications.
 #
-# The backup holds personal data (bookmarks, shell config, app preferences and
-# licences), and this repo is public, so the backup goes to a folder outside
-# it. Copy that folder (or the .zip made next to it) to the new Mac yourself.
+# This repo is public, so the capture is split in two:
+#   settings/saved/      settings without secrets, kept in the repo: system
+#                        settings, dotfiles, iTerm2, JetBrains and editor
+#                        settings, browser extension lists. Commit them.
+#   ~/MacSettingsBackup  everything personal: bookmarks, app preferences,
+#                        fonts, ssh and aws config, and any file that looks
+#                        like it holds a secret. Copy that folder (or the .zip
+#                        made next to it) to the new Mac yourself.
 # Passwords, cookies, browser history and IDE login tokens are left out.
 #
 # Usage:
-#   ./settings/capture-settings.sh                    writes ~/MacSettingsBackup
+#   ./settings/capture-settings.sh                    writes settings/saved and ~/MacSettingsBackup
 #   BACKUP_DIR=/Volumes/USB/settings ./settings/capture-settings.sh
 #
 # Safari's settings and bookmarks can only be read when the terminal app has
 # Full Disk Access (System Settings → Privacy & Security → Full Disk Access).
 #
-# Safe to re-run: an earlier backup in the same folder is replaced.
+# Safe to re-run: settings/saved and an earlier backup in the same folder are
+# replaced.
 # Written for the macOS default bash (3.2), so no associative arrays.
 
 set -u
@@ -26,6 +32,7 @@ set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(dirname "$HERE")"
 BACKUP_DIR="${BACKUP_DIR:-$HOME/MacSettingsBackup}"
+PUBLIC_DIR="${PUBLIC_DIR:-$HERE/saved}"
 APPS_DIR="${APPS_DIR:-/Applications}"
 SUPPORT="$HOME/Library/Application Support"
 MARKER=".mac-settings-backup"
@@ -153,19 +160,29 @@ prepare_backup_dir() {
   touch "$BACKUP_DIR/$MARKER"
 }
 
+# Everything is captured here first, then split_capture sorts it.
+STAGE="$(mktemp -d)"
+trap 'rm -rf "$STAGE"' EXIT
+
+split_capture() {
+  bold "Sorting out what's safe for the repo..."
+  rm -rf "$PUBLIC_DIR"
+  py split "$STAGE" "$PUBLIC_DIR" "$BACKUP_DIR"
+}
+
 capture_system() {
   bold "System settings..."
   local domain n=0
   for domain in $SYSTEM_DOMAINS; do
-    export_domain "$BACKUP_DIR/system/defaults/$domain.plist" "$domain" && n=$((n + 1))
+    export_domain "$STAGE/system/defaults/$domain.plist" "$domain" && n=$((n + 1))
   done
   for domain in $CURRENT_HOST_DOMAINS; do
-    export_domain "$BACKUP_DIR/system/currentHost/$domain.plist" "$domain" -currentHost && n=$((n + 1))
+    export_domain "$STAGE/system/currentHost/$domain.plist" "$domain" -currentHost && n=$((n + 1))
   done
   info "$n settings groups (Dock, Finder, keyboard, trackpad, menu bar, shortcuts, ...)"
 
   # Everything else, for reference only. restore-settings.sh doesn't touch it.
-  local all="$BACKUP_DIR/reference/all-defaults" count=0
+  local all="$STAGE/reference/all-defaults" count=0
   mkdir -p "$all"
   defaults export NSGlobalDomain "$all/NSGlobalDomain.plist" 2>/dev/null
   for domain in $(defaults domains 2>/dev/null | tr -d ' ' | tr ',' ' '); do
@@ -175,23 +192,22 @@ capture_system() {
   info "$count other preference files kept for reference"
 
   py text-replacements "$HOME/Library/KeyboardServices/TextReplacements.db" \
-    > "$BACKUP_DIR/system/text-replacements.tsv"
-  [ -s "$BACKUP_DIR/system/text-replacements.tsv" ] || rm -f "$BACKUP_DIR/system/text-replacements.tsv"
-  copy_into "$HOME/Library/Fonts" "$BACKUP_DIR/system" && info "your fonts"
+    > "$STAGE/system/text-replacements.tsv"
+  [ -s "$STAGE/system/text-replacements.tsv" ] || rm -f "$STAGE/system/text-replacements.tsv"
+  copy_into "$HOME/Library/Fonts" "$STAGE/system" && info "your fonts"
   local workflow
   for workflow in "$HOME"/Library/Services/*.workflow; do
-    copy_into "$workflow" "$BACKUP_DIR/system/Services"
+    copy_into "$workflow" "$STAGE/system/Services"
   done
-  [ -d "$BACKUP_DIR/system/Services" ] && info "Quick Actions (Services)"
-  copy_into "$HOME/Library/LaunchAgents" "$BACKUP_DIR/reference"
+  [ -d "$STAGE/system/Services" ] && info "Quick Actions (Services)"
+  copy_into "$HOME/Library/LaunchAgents" "$STAGE/reference"
 
   {
-    echo "Captured: $(date)"
     command -v sw_vers >/dev/null && sw_vers
     command -v scutil >/dev/null && echo "Computer name: $(scutil --get ComputerName 2>/dev/null)"
     echo "Time zone: $(readlink /etc/localtime 2>/dev/null | sed 's|.*zoneinfo/||')"
     if command -v pmset >/dev/null; then echo; echo "Power (pmset -g custom):"; pmset -g custom 2>/dev/null; fi
-  } > "$BACKUP_DIR/system/info.txt"
+  } > "$STAGE/system/info.txt"
 }
 
 capture_dotfiles() {
@@ -199,7 +215,7 @@ capture_dotfiles() {
   local f n=0
   for f in $DOTFILES; do
     [ -e "$HOME/$f" ] || continue
-    py copy "$HOME/$f" "$BACKUP_DIR/dotfiles/$f" --exclude .git --exclude node_modules >/dev/null \
+    py copy "$HOME/$f" "$STAGE/dotfiles/$f" --exclude .git --exclude node_modules >/dev/null \
       && n=$((n + 1))
   done
   info "$n files and folders"
@@ -207,7 +223,7 @@ capture_dotfiles() {
 
 capture_iterm() {
   bold "iTerm2..."
-  local dest="$BACKUP_DIR/apps/iterm2"
+  local dest="$STAGE/apps/iterm2"
   if ! export_domain "$dest/com.googlecode.iterm2.plist" com.googlecode.iterm2; then
     info "no iTerm2 settings found"
     return
@@ -218,7 +234,7 @@ capture_iterm() {
 }
 
 capture_webstorm() {
-  BACKUP_DIR="$BACKUP_DIR" "$REPO_DIR/appsettings/webstorm/capture.sh"
+  STAGE_DIR="$STAGE" "$REPO_DIR/appsettings/webstorm/capture.sh"
 }
 
 # The newest config folder for each other JetBrains IDE, e.g. PyCharm2026.1.
@@ -242,7 +258,7 @@ capture_jetbrains() {
   for name in $(jetbrains_dirs); do
     found=true
     src="$SUPPORT/JetBrains/$name"
-    dest="$BACKUP_DIR/apps/jetbrains/$name"
+    dest="$STAGE/apps/jetbrains/$name"
     mkdir -p "$dest"
     for item in $JETBRAINS_KEEP; do
       [ -e "$src/$item" ] && cp -R "$src/$item" "$dest/"
@@ -264,7 +280,7 @@ capture_editors() {
     user="$SUPPORT/$folder/User"
     [ -d "$user" ] || continue
     found=true
-    dest="$BACKUP_DIR/apps/editors/$folder"
+    dest="$STAGE/apps/editors/$folder"
     mkdir -p "$dest"
     copy_into "$user/settings.json" "$dest"
     copy_into "$user/keybindings.json" "$dest"
@@ -285,7 +301,7 @@ capture_browsers() {
       info "$name: no profiles found"
       continue
     fi
-    dest="$BACKUP_DIR/browsers/$name"
+    dest="$STAGE/browsers/$name"
     mkdir -p "$dest"
     py chromium-profiles "$root/Local State" > "$dest/profiles.tsv"
     for dir in "$root"/*; do
@@ -311,10 +327,10 @@ capture_firefox() {
     info "Firefox: no profiles found"
     return
   fi
-  copy_into "$root/profiles.ini" "$BACKUP_DIR/browsers/Firefox"
+  copy_into "$root/profiles.ini" "$STAGE/browsers/Firefox"
   for dir in "$root"/Profiles/*; do
     [ -f "$dir/prefs.js" ] || continue
-    dest="$BACKUP_DIR/browsers/Firefox/$(basename "$dir")"
+    dest="$STAGE/browsers/Firefox/$(basename "$dir")"
     mkdir -p "$dest"
     copy_into "$dir/prefs.js" "$dest"
     copy_into "$dir/user.js" "$dest"
@@ -329,7 +345,7 @@ capture_firefox() {
 }
 
 capture_safari() {
-  local dest="$BACKUP_DIR/browsers/Safari"
+  local dest="$STAGE/browsers/Safari"
   if [ ! -d "$APPS_DIR/Safari.app" ]; then
     return
   fi
@@ -347,16 +363,16 @@ capture_safari() {
 # Every app in /Applications that keeps preferences with macOS.
 capture_apps() {
   bold "App preferences..."
-  local app id dest="$BACKUP_DIR/apps/plists" n=0
+  local app id dest="$STAGE/apps/plists" n=0
   mkdir -p "$dest"
-  : > "$BACKUP_DIR/apps/index.tsv"
+  : > "$STAGE/apps/index.tsv"
   for app in "$APPS_DIR"/*.app; do
     [ -d "$app" ] || continue
     id="$(defaults read "$app/Contents/Info" CFBundleIdentifier 2>/dev/null)"
     [ -n "$id" ] || continue
     case "$id" in com.googlecode.iterm2 | com.apple.Safari | com.jetbrains.WebStorm) continue ;; esac
     export_domain "$dest/$id.plist" "$id" || continue
-    printf '%s\t%s\n' "$id" "$(basename "$app")" >> "$BACKUP_DIR/apps/index.tsv"
+    printf '%s\t%s\n' "$id" "$(basename "$app")" >> "$STAGE/apps/index.tsv"
     n=$((n + 1))
   done
   info "$n apps"
@@ -367,18 +383,19 @@ write_readme() {
 Mac settings captured on $(date '+%Y-%m-%d') by MACSETUP-M1/settings/capture-settings.sh.
 
 This folder holds personal data. Keep it off GitHub and other public places.
-To put the settings back on a new Mac, copy this folder to ~/MacSettingsBackup
-on it, then run:
+The settings without secrets are in the repo, in settings/saved. To put
+everything back on a new Mac, copy this folder to ~/MacSettingsBackup on it,
+then run:
 
   ~/projects/MACSETUP-M1/settings/restore-settings.sh
 
-system/      System Settings (Dock, Finder, keyboard, trackpad, ...), fonts,
-             Quick Actions, text replacements and power settings (info.txt)
-dotfiles/    shell, git and ssh config from your home folder
-apps/        iTerm2, WebStorm (webstorm/), other JetBrains IDEs, VS Code /
-             Cursor, and the preferences of every app in /Applications
-             (index.tsv lists them)
-browsers/    bookmarks, extensions and custom search engines per profile
+system/      fonts and text replacements
+dotfiles/    ssh and aws config, and any dotfile that looks like it holds a
+             secret
+apps/        the preferences of every app in /Applications (index.tsv lists
+             them), WebStorm's workspaces, scratches and macOS preferences, and
+             JetBrains files with accounts or recent projects
+browsers/    bookmarks and browser preferences per profile
 reference/   every other preferences file and your LaunchAgents. Nothing here
              is restored automatically.
 EOF
@@ -394,12 +411,12 @@ zip_backup() {
 # ---------------------------------------------------------------------------
 
 if [ "${1:-}" = --help ] || [ "${1:-}" = -h ]; then
-  sed -n '3,23p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '3,28p' "$0" | sed 's/^# \{0,1\}//'
   exit 0
 fi
 
 prepare_backup_dir
-echo "Capturing settings into $BACKUP_DIR"
+echo "Capturing settings"
 echo
 capture_system
 echo; capture_dotfiles
@@ -409,10 +426,13 @@ echo; capture_jetbrains
 echo; capture_editors
 echo; capture_browsers
 echo; capture_apps
+echo; split_capture
 write_readme
 
 echo
-bold "Done. $(du -sh "$BACKUP_DIR" | cut -f1) in $BACKUP_DIR"
+bold "Done."
+info "Commit settings/saved to the repo (check git diff first)."
+info "Private backup: $(du -sh "$BACKUP_DIR" | cut -f1) in $BACKUP_DIR"
 zip_backup
-info "Copy it to the new Mac (AirDrop, USB drive, iCloud Drive) and run"
-info "settings/restore-settings.sh there."
+info "Copy it to the new Mac yourself (AirDrop, USB drive, iCloud Drive), then"
+info "run settings/restore-settings.sh there."

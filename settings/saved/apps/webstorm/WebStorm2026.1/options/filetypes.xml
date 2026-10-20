@@ -1,0 +1,14 @@
+<application>
+  <component name="FileTypeManager" version="19">
+    <extensionMap>
+      <mapping pattern="mcp.json" type="JSON5" />
+      <mapping ext="traineddata" type="PLAIN_TEXT" />
+      <mapping ext="obj" type="PLAIN_TEXT" />
+      <removed_mapping ext="bash" approved="true" type="Shell Script" />
+      <removed_mapping ext="csv" approved="true" type="CSV/TSV" />
+      <removed_mapping ext="sh" approved="true" type="Shell Script" />
+      <removed_mapping ext="ttf" approved="true" type="PLAIN_TEXT" />
+      <removed_mapping ext="zsh" approved="true" type="Shell Script" />
+    </extensionMap>
+  </component>
+</application>

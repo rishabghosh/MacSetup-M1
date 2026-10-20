@@ -1,0 +1,16 @@
+1377x.to	1377x.to	https://www.1377x.to/srch?search={searchTerms}
+airbnb.co.in	Airbnb	https://www.airbnb.com/s?location={searchTerms}
+amazon.in	amazon.in	https://www.amazon.in/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords={searchTerms}&crid=2VN648329XUNW&sprefix=vguard+vm50%2Caps%2C280
+appstorrent.ru	DataLife Engine	https://appstorrent.ru/index.php?story={searchTerms}&do=search&subaction=search
+desitorrents.com	DesiTorrents Search	http://www.desitorrents.com/forums/search.php?do=process&query={searchTerms}
+flipkart.com	flipkart.com	https://www.flipkart.com/search?q={searchTerms}&otracker=search&otracker1=search&marketplace=FLIPKART&as-show=off&as=off
+maps.google.com	Google Maps	https://www.google.com/maps/search/{searchTerms}?hl=en&source=opensearch
+myntra.com	Myntra Fashion	https://www.myntra.com/{searchTerms}?userQuery=true
+portronics.com	portronics.com	https://www.portronics.com/search?q={searchTerms}&options%5Bprefix%5D=last
+ramoflix.net	ramoflix.net	https://ramoflix.net/?s={searchTerms}
+remoteok.com	Remote Jobs	https://remoteok.com/remote-{searchTerms}-jobs
+remotion.dev	Remotion | Make videos programmatically	https://www.remotion.dev/search?q={searchTerms}
+search.conduit.com	Conduit	http://search.conduit.com/Results.aspx?q={searchTerms}&SearchSource=49&ctid=CT3254645
+thepiratebay.org	thepiratebay.org	https://thepiratebay.org/search.php?q={searchTerms}&all=on&search=Pirate+Search&page=0&orderby=
+x.com	X	https://x.com/search?q={searchTerms}
+youtube.com	YouTube	https://www.youtube.com/results?search_query={searchTerms}&page={startPage?}&utm_source=opensearch

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AccessibilityShortcuts</key>
+	<integer>9</integer>
+	<key>AirDrop</key>
+	<integer>8</integer>
+	<key>AirplayReceiverAdvertising</key>
+	<integer>2</integer>
+	<key>Bluetooth</key>
+	<integer>2</integer>
+	<key>Display</key>
+	<integer>2</integer>
+	<key>FocusModes</key>
+	<integer>24</integer>
+	<key>LastSelectedDisplayUUID</key>
+	<string>37D8832A-2D66-02CA-B9F7-8F30A301B230</string>
+	<key>NowPlaying</key>
+	<integer>8</integer>
+	<key>UserSwitcher</key>
+	<integer>24</integer>
+	<key>VoiceControl</key>
+	<integer>8</integer>
+</dict>
+</plist>

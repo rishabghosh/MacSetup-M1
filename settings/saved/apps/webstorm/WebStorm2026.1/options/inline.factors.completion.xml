@@ -1,0 +1,66 @@
+<application>
+  <component name="TimeBetweenTyping">
+    <dailyDataMap>
+      <entry key="2026-05-29">
+        <DailyData>
+          <option name="count" value="146" />
+          <option name="totalTime" value="76354" />
+        </DailyData>
+      </entry>
+      <entry key="2026-05-30">
+        <DailyData>
+          <option name="count" value="133" />
+          <option name="totalTime" value="91405" />
+        </DailyData>
+      </entry>
+      <entry key="2026-05-31">
+        <DailyData>
+          <option name="count" value="53" />
+          <option name="totalTime" value="75266" />
+        </DailyData>
+      </entry>
+      <entry key="2026-06-02">
+        <DailyData>
+          <option name="count" value="44" />
+          <option name="totalTime" value="51013" />
+        </DailyData>
+      </entry>
+      <entry key="2026-06-03">
+        <DailyData>
+          <option name="count" value="8" />
+          <option name="totalTime" value="10031" />
+        </DailyData>
+      </entry>
+      <entry key="2026-06-04">
+        <DailyData>
+          <option name="count" value="17" />
+          <option name="totalTime" value="23449" />
+        </DailyData>
+      </entry>
+      <entry key="2026-06-09">
+        <DailyData>
+          <option name="count" value="63" />
+          <option name="totalTime" value="11899" />
+        </DailyData>
+      </entry>
+      <entry key="2026-07-01">
+        <DailyData>
+          <option name="count" value="1" />
+          <option name="totalTime" value="2333" />
+        </DailyData>
+      </entry>
+      <entry key="2026-08-29">
+        <DailyData>
+          <option name="count" value="1" />
+          <option name="totalTime" value="544" />
+        </DailyData>
+      </entry>
+      <entry key="2026-09-23">
+        <DailyData>
+          <option name="count" value="146" />
+          <option name="totalTime" value="104858" />
+        </DailyData>
+      </entry>
+    </dailyDataMap>
+  </component>
+</application>

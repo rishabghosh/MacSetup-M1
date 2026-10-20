@@ -1,0 +1,9 @@
+<application>
+  <component name="AcpAgentSettings">
+    <option name="agent_models">
+      <map>
+        <entry key="codex" value="gpt-5.3-codex[medium]" />
+      </map>
+    </option>
+  </component>
+</application>

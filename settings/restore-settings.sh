@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 #
-# Put back the settings capture-settings.sh saved on the old Mac. Run it after
-# the apps are installed (appsetup/install-*.sh), because app settings are only
-# restored for apps that are there.
+# Put back the settings capture-settings.sh saved on the old Mac: the ones in
+# the repo (settings/saved) together with the private backup copied over from
+# the old Mac. Without the private backup, only the repo's settings come back.
+# Run it after the apps are installed (appsetup/install-*.sh), because app
+# settings are only restored for apps that are there.
 #
 # Usage:
 #   ./settings/restore-settings.sh [backup folder]   default ~/MacSettingsBackup
@@ -17,20 +19,21 @@
 
 set -u
 
-BACKUP_DIR="$HOME/MacSettingsBackup"
+PRIVATE_DIR="$HOME/MacSettingsBackup"
 APPS_DIR="${APPS_DIR:-/Applications}"
 SUPPORT="$HOME/Library/Application Support"
 HERE="$(cd "$(dirname "$0")" && pwd)"
+PUBLIC_DIR="${PUBLIC_DIR:-$HERE/saved}"
 YES=false
 for arg in "$@"; do
   case "$arg" in
     --yes | -y) YES=true ;;
-    --help | -h) sed -n '3,16p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --help | -h) sed -n '3,18p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     -*) echo "Unknown option: $arg" >&2; exit 1 ;;
-    *) BACKUP_DIR="$arg" ;;
+    *) PRIVATE_DIR="$arg" ;;
   esac
 done
-UNDO="$BACKUP_DIR/undo-$(date +%Y%m%d-%H%M%S)"
+UNDO="$PRIVATE_DIR/undo-$(date +%Y%m%d-%H%M%S)"
 
 # Editors: name|folder in Application Support|command-line tool|tool inside the app
 EDITORS="
@@ -109,6 +112,12 @@ copy_file() {
   cp -R "$1" "$2"
 }
 
+# saved_path <path inside the backup>: where that file is kept, in the repo or
+# the private backup, for messages. BACKUP_DIR is a temporary merge of the two.
+saved_path() {
+  if [ -e "$PUBLIC_DIR/$1" ]; then echo "$PUBLIC_DIR/$1"; else echo "$PRIVATE_DIR/$1"; fi
+}
+
 # ---------------------------------------------------------------------------
 
 restore_system() {
@@ -161,7 +170,7 @@ restore_dotfiles() {
       copy_file "$src" "$dest" "dotfiles/$(dirname "$rel")"
       info "$rel: replaced"
     else
-      info "$rel: left alone. Compare with: diff ~/$rel '$src'"
+      info "$rel: left alone. Compare with: diff ~/$rel '$(saved_path "dotfiles/$rel")'"
     fi
   done
   [ -f "$HOME/.ssh/config" ] && chmod 600 "$HOME/.ssh/config"
@@ -311,7 +320,7 @@ restore_editors() {
     cli="$(command -v "$tool" 2>/dev/null || true)"
     [ -z "$cli" ] && [ -x "$APPS_DIR/$bundled" ] && cli="$APPS_DIR/$bundled"
     if [ -z "$cli" ]; then
-      warn "No $tool command, so extensions weren't installed. The list is in $saved/extensions.txt"
+      warn "No $tool command, so extensions weren't installed. The list is in $(saved_path "apps/editors/$folder/extensions.txt")"
       continue
     fi
     have="$("$cli" --list-extensions </dev/null 2>/dev/null | tr '[:upper:]' '[:lower:]')"
@@ -364,7 +373,7 @@ restore_browsers() {
 
   restore_safari
   info "Extensions and custom search engines for each profile are listed in"
-  info "$BACKUP_DIR/browsers/<browser>/<profile>/extensions.tsv and search-engines.tsv."
+  info "$PUBLIC_DIR/browsers/<browser>/<profile>/extensions.tsv and search-engines.tsv."
 }
 
 restore_safari() {
@@ -427,19 +436,20 @@ checklist() {
   - Passwords: they come from 1Password and iCloud Keychain.
   - Login items: System Settings → General → Login Items.
   - Wallpaper, Wi-Fi, Touch ID, notifications and privacy permissions.
-  - Text replacements sync through iCloud. A copy is in system/text-replacements.tsv.
+  - Text replacements sync through iCloud. A copy is in $PRIVATE_DIR/system/text-replacements.tsv.
   - Browser extensions: they come back with browser sync, or install them from the
-    lists in browsers/.
-  - Firefox: sign in to Firefox sync. Its prefs.js and a bookmark backup are in browsers/Firefox.
-  - Power settings: compare with system/info.txt in System Settings → Battery.
+    lists in $PUBLIC_DIR/browsers.
+  - Firefox: sign in to Firefox sync. Its prefs.js and a bookmark backup are in $PRIVATE_DIR/browsers/Firefox.
+  - Power settings: compare with $PUBLIC_DIR/system/info.txt in System Settings → Battery.
 EOF
 }
 
 # ---------------------------------------------------------------------------
 
-if [ ! -d "$BACKUP_DIR/system" ] && [ ! -d "$BACKUP_DIR/apps" ]; then
-  warn "No settings backup in $BACKUP_DIR."
-  info "Copy the folder capture-settings.sh made on the old Mac there, or pass its path."
+if [ ! -d "$PUBLIC_DIR/system" ] && [ ! -d "$PRIVATE_DIR/system" ] && [ ! -d "$PRIVATE_DIR/apps" ]; then
+  warn "No settings in $PUBLIC_DIR or $PRIVATE_DIR."
+  info "Run settings/capture-settings.sh on the old Mac, commit settings/saved, and copy"
+  info "the private backup it made there, or pass its path."
   exit 1
 fi
 if [ "$YES" = false ] && ! { : </dev/tty; } 2>/dev/null; then
@@ -447,8 +457,21 @@ if [ "$YES" = false ] && ! { : </dev/tty; } 2>/dev/null; then
   exit 1
 fi
 
-echo "Restoring settings from $BACKUP_DIR"
-[ -f "$BACKUP_DIR/README.txt" ] && info "$(head -1 "$BACKUP_DIR/README.txt")"
+# One folder with both: the repo's settings, then the private backup's.
+BACKUP_DIR="$(mktemp -d)"
+trap 'rm -rf "$BACKUP_DIR"' EXIT
+for dir in "$PUBLIC_DIR" "$PRIVATE_DIR"; do
+  [ -d "$dir" ] && py copy "$dir" "$BACKUP_DIR" --exclude 'undo-*' >/dev/null
+done
+
+echo "Restoring settings from $PUBLIC_DIR"
+if [ -d "$PRIVATE_DIR/system" ] || [ -d "$PRIVATE_DIR/apps" ]; then
+  info "and $PRIVATE_DIR"
+  [ -f "$PRIVATE_DIR/README.txt" ] && info "$(head -1 "$PRIVATE_DIR/README.txt")"
+else
+  warn "No private backup in $PRIVATE_DIR, so bookmarks, app preferences and"
+  info "anything else personal won't come back. Copy it from the old Mac, or pass its path."
+fi
 echo
 restore_system
 echo; restore_dotfiles

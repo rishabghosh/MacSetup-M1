@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ControlCenterDisplayableChronoControlsProviderConfiguration</key>
+	<data>
+	eyJDb250cm9scyI6W3siQ29udHJvbElkZW50aXR5IjoiWW5Cc2FYTjBNRERVQVFJREJB
+	VUdCd3BZSkhabGNuTnBiMjVaSkdGeVkyaHBkbVZ5VkNSMGIzQllKRzlpYW1WamRITVNB
+	QUdHb0Y4UUQwNVRTMlY1WldSQmNtTm9hWFpsY3RFSUNWUnliMjkwZ0FHb0N3d1ZIUjRm
+	SmlkVkpHNTFiR3pVRFE0UEVCRVNFeFJaYVc1MFpXNTBVbVZtVkd0cGJtUlZaWGgwU1dS
+	V0pHTnNZWE56Z0FDQUJvQUNnQWZVRmhjWUVCRWFHeHhmRUJCa1pYWnBZMlZKWkdWdWRH
+	bG1hV1Z5WHhBWlkyOXVkR0ZwYm1WeVFuVnVaR3hsU1dSbGJuUnBabWxsY2w4UUdXVjRk
+	R1Z1YzJsdmJrSjFibVJzWlVsa1pXNTBhV1pwWlhLQUFJQUVnQU9BQlY4UUdtTnZiUzVo
+	Y0hCc1pTNWpiMjUwY205c2N5NWthWE53YkdGNVh4QVhZMjl0TG1Gd2NHeGxMbU52Ym5S
+	eWIyeGpaVzUwWlhMU0lDRWlJMW9rWTJ4aGMzTnVZVzFsV0NSamJHRnpjMlZ6WHhBVVEw
+	aFRSWGgwWlc1emFXOXVTV1JsYm5ScGRIbWlKQ1ZmRUJSRFNGTkZlSFJsYm5OcGIyNUpa
+	R1Z1ZEdsMGVWaE9VMDlpYW1WamRGOFFKR052YlM1aGNIQnNaUzVqYjI1MGNtOXNjeTVr
+	YVhOd2JHRjVMbVJoY21zdGJXOWtaZElnSVNncFh4QVNRMGhUUTI5dWRISnZiRWxrWlc1
+	MGFYUjVvaW9sWHhBU1EwaFRRMjl1ZEhKdmJFbGtaVzUwYVhSNUFBZ0FFUUFhQUNRQUtR
+	QXlBRGNBU1FCTUFGRUFVd0JjQUdJQWF3QjFBSG9BZ0FDSEFJa0Fpd0NOQUk4QW1BQ3JB
+	TWNBNHdEbEFPY0E2UURyQVFnQklnRW5BVElCT3dGU0FWVUJiQUYxQVp3Qm9RRzJBYmtB
+	QUFBQUFBQUNBUUFBQUFBQUFBQXJBQUFBQUFBQUFBQUFBQUFBQUFBQnpnPT0iLCJPdmVy
+	cmlkZVNpemVGb3JNZW51QmFyIjpmYWxzZSwiSWRlbnRpZmllciI6WyIzQkQzNkZDRi1E
+	OTIwLTQwNjAtQUQ4NC04RTg1REJDRkM4QTEiXSwiRGlzcGxheU5hbWUiOiJEYXJrIE1v
+	ZGUiLCJDb250cm9sVHlwZSI6MSwiUHJvbXB0c0ZvclVzZXJDb25maWd1cmF0aW9uIjpm
+	YWxzZSwiQ29udHJvbERlc2NyaXB0aW9uIjoiVG9nZ2xlIHdoZXRoZXIgRGFyayBNb2Rl
+	IGlzIGVuYWJsZWQiLCJDb250cm9sU2l6ZSI6MH0seyJDb250cm9sSWRlbnRpdHkiOiJZ
+	bkJzYVhOME1ERFVBUUlEQkFVR0J3cFlKSFpsY25OcGIyNVpKR0Z5WTJocGRtVnlWQ1Iw
+	YjNCWUpHOWlhbVZqZEhNU0FBR0dvRjhRRDA1VFMyVjVaV1JCY21Ob2FYWmxjdEVJQ1ZS
+	eWIyOTBnQUdvQ3d3VkhSNGZKaWRWSkc1MWJHelVEUTRQRUJFU0V4UlphVzUwWlc1MFVt
+	Vm1WR3RwYm1SVlpYaDBTV1JXSkdOc1lYTnpnQUNBQm9BQ2dBZlVGaGNZRUJFYUd4eGZF
+	QkJrWlhacFkyVkpaR1Z1ZEdsbWFXVnlYeEFaWTI5dWRHRnBibVZ5UW5WdVpHeGxTV1Js
+	Ym5ScFptbGxjbDhRR1dWNGRHVnVjMmx2YmtKMWJtUnNaVWxrWlc1MGFXWnBaWEtBQUlB
+	RWdBT0FCVjhRSUdOdmJTNWhjSEJzWlM1WGFXNWtiM2ROWVc1aFoyVnlMbU52Ym5SeWIy
+	eHpYeEFYWTI5dExtRndjR3hsTGxkcGJtUnZkMDFoYm1GblpYTFNJQ0VpSTFva1kyeGhj
+	M051WVcxbFdDUmpiR0Z6YzJWelh4QVVRMGhUUlhoMFpXNXphVzl1U1dSbGJuUnBkSG1p
+	SkNWZkVCUkRTRk5GZUhSbGJuTnBiMjVKWkdWdWRHbDBlVmhPVTA5aWFtVmpkRjhRSkdO
+	dmJTNWhjSEJzWlM1M2FXNWtiM2R0WVc1aFoyVnlMbk4wWVdkbGJXRnVZV2RsY3RJZ0lT
+	Z3BYeEFTUTBoVFEyOXVkSEp2YkVsa1pXNTBhWFI1b2lvbFh4QVNRMGhUUTI5dWRISnZi
+	RWxrWlc1MGFYUjVBQWdBRVFBYUFDUUFLUUF5QURjQVNRQk1BRkVBVXdCY0FHSUFhd0Ix
+	QUhvQWdBQ0hBSWtBaXdDTkFJOEFtQUNyQU1jQTR3RGxBT2NBNlFEckFRNEJLQUV0QVRn
+	QlFRRllBVnNCY2dGN0FhSUJwd0c4QWI4QUFBQUFBQUFDQVFBQUFBQUFBQUFyQUFBQUFB
+	QUFBQUFBQUFBQUFBQUIxQT09IiwiT3ZlcnJpZGVTaXplRm9yTWVudUJhciI6ZmFsc2Us
+	IklkZW50aWZpZXIiOlsiNkNEMzg5MjQtQ0FFRC00Qzk5LTg3NkUtNkY2RDA1RTZGNTkz
+	Il0sIkRpc3BsYXlOYW1lIjoiU3RhZ2UgTWFuYWdlciIsIkNvbnRyb2xUeXBlIjoxLCJQ
+	cm9tcHRzRm9yVXNlckNvbmZpZ3VyYXRpb24iOmZhbHNlLCJDb250cm9sRGVzY3JpcHRp
+	b24iOiJFbmFibGUgU3RhZ2UgTWFuYWdlciIsIkNvbnRyb2xTaXplIjowfSx7IkNvbnRy
+	b2xJZGVudGl0eSI6IlluQnNhWE4wTUREVUFRSURCQVVHQndwWUpIWmxjbk5wYjI1WkpH
+	RnlZMmhwZG1WeVZDUjBiM0JZSkc5aWFtVmpkSE1TQUFHR29GOFFEMDVUUzJWNVpXUkJj
+	bU5vYVhabGN0RUlDVlJ5YjI5MGdBR29Dd3dWSFI0ZkppZFZKRzUxYkd6VURRNFBFQkVT
+	RXhSWmFXNTBaVzUwVW1WbVZHdHBibVJWWlhoMFNXUldKR05zWVhOemdBQ0FCb0FDZ0Fm
+	VUZoY1lFQkVhR3h4ZkVCQmtaWFpwWTJWSlpHVnVkR2xtYVdWeVh4QVpZMjl1ZEdGcGJt
+	VnlRblZ1Wkd4bFNXUmxiblJwWm1sbGNsOFFHV1Y0ZEdWdWMybHZia0oxYm1Sc1pVbGta
+	VzUwYVdacFpYS0FBSUFFZ0FPQUJWOFFIV052YlM1aGNIQnNaUzVqYjI1MGNtOXNjeTV6
+	WTNKbFpXNXphRzkwWHhBZFkyOXRMbUZ3Y0d4bExuTmpjbVZsYm5Ob2IzUXViR0YxYm1O
+	b1pYTFNJQ0VpSTFva1kyeGhjM051WVcxbFdDUmpiR0Z6YzJWelh4QVVRMGhUUlhoMFpX
+	NXphVzl1U1dSbGJuUnBkSG1pSkNWZkVCUkRTRk5GZUhSbGJuTnBiMjVKWkdWdWRHbDBl
+	VmhPVTA5aWFtVmpkRjhRTEdOdmJTNWhjSEJzWlM1amIyNTBjbTlzY3k1elkzSmxaVzV6
+	YUc5MExtTmhjSFIxY21VdGMyTnlaV1Z1MGlBaEtDbGZFQkpEU0ZORGIyNTBjbTlzU1dS
+	bGJuUnBkSG1pS2lWZkVCSkRTRk5EYjI1MGNtOXNTV1JsYm5ScGRIa0FDQUFSQUJvQUpB
+	QXBBRElBTndCSkFFd0FVUUJUQUZ3QVlnQnJBSFVBZWdDQUFJY0FpUUNMQUkwQWp3Q1lB
+	S3NBeHdEakFPVUE1d0RwQU9zQkN3RXJBVEFCT3dGRUFWc0JYZ0YxQVg0QnJRR3lBY2NC
+	eWdBQUFBQUFBQUlCQUFBQUFBQUFBQ3NBQUFBQUFBQUFBQUFBQUFBQUFBSGYiLCJPdmVy
+	cmlkZVNpemVGb3JNZW51QmFyIjpmYWxzZSwiSWRlbnRpZmllciI6WyI2RDFGNEEwNS04
+	RTlGLTQwMjktQjY4NC1CNDdCMzgxMDgyODYiXSwiRGlzcGxheU5hbWUiOiJDYXB0dXJl
+	IFNjcmVlbiIsIkNvbnRyb2xUeXBlIjoyLCJQcm9tcHRzRm9yVXNlckNvbmZpZ3VyYXRp
+	b24iOmZhbHNlLCJDb250cm9sRGVzY3JpcHRpb24iOiJCdXR0b24gdG8gdGFrZSBhIHNj
+	cmVlbnNob3QiLCJDb250cm9sU2l6ZSI6MH1dfQ==
+	</data>
+	<key>HasAttemptedMenuBarWorkflowMigration</key>
+	<true/>
+	<key>LastHeartbeatDateString.daily</key>
+	<string>2026-10-19T08:01:30Z</string>
+	<key>LastPeriodicAnalyticsPostDate</key>
+	<date>2026-10-20T01:18:50Z</date>
+	<key>LiveActivityState</key>
+	<data>
+	eyJFbmFibGVkIjpmYWxzZSwiQ29tcGFuaW9uUGFpcmVkIjpmYWxzZSwiTGFzdENoYW5n
+	ZURhdGUiOjc5NDQwNTM5MS44OTUxMDYsIlNldHRpbmdFbmFibGVkIjp0cnVlLCJTZXR0
+	aW5nRXZlckVkaXRlZCI6dHJ1ZX0=
+	</data>
+	<key>MenuBarCustomizationState</key>
+	<data>
+	eyJSZW1vdmVkQ29udHJvbCI6dHJ1ZSwiTGFzdENoYW5nZURhdGUiOjc5NTIzNTA1NC4z
+	Mzk4NTcsIk1vdmVkQ29udHJvbFRvQmVudG9Cb3giOmZhbHNlLCJDdXN0b21pemVkQ29u
+	dHJvbCI6ZmFsc2UsIlJlbW92ZWRCZW50b0JveCI6ZmFsc2UsIkFkZGVkQ29udHJvbCI6
+	ZmFsc2UsIkFkZGVkQmVudG9Cb3giOmZhbHNlfQ==
+	</data>
+	<key>NSStatusItem Preferred Position Battery</key>
+	<real>201.0</real>
+	<key>NSStatusItem Preferred Position BentoBox</key>
+	<real>180.0</real>
+	<key>NSStatusItem Preferred Position BentoBox-0</key>
+	<real>159.0</real>
+	<key>NSStatusItem Preferred Position Bluetooth</key>
+	<real>281.0</real>
+	<key>NSStatusItem Preferred Position Display</key>
+	<real>469.0</real>
+	<key>NSStatusItem Preferred Position ScreenMirroring</key>
+	<real>297.0</real>
+	<key>NSStatusItem Preferred Position WiFi</key>
+	<real>243.0</real>
+	<key>NSStatusItem Visible BentoBox</key>
+	<true/>
+	<key>NSStatusItem Visible Display</key>
+	<false/>
+	<key>NSStatusItem Visible Item-0</key>
+	<false/>
+	<key>NSStatusItem Visible Item-1</key>
+	<false/>
+	<key>NSStatusItem Visible Item-10</key>
+	<false/>
+	<key>NSStatusItem Visible Item-11</key>
+	<false/>
+	<key>NSStatusItem Visible Item-2</key>
+	<false/>
+	<key>NSStatusItem Visible Item-3</key>
+	<false/>
+	<key>NSStatusItem Visible Item-4</key>
+	<false/>
+	<key>NSStatusItem Visible Item-5</key>
+	<false/>
+	<key>NSStatusItem Visible Item-6</key>
+	<false/>
+	<key>NSStatusItem Visible Item-7</key>
+	<false/>
+	<key>NSStatusItem Visible Item-8</key>
+	<false/>
+	<key>NSStatusItem Visible Item-9</key>
+	<false/>
+	<key>NSStatusItem Visible ScreenMirroring</key>
+	<false/>
+	<key>NSStatusItem VisibleCC Battery</key>
+	<true/>
+	<key>NSStatusItem VisibleCC BentoBox-0</key>
+	<true/>
+	<key>NSStatusItem VisibleCC Bluetooth</key>
+	<true/>
+	<key>NSStatusItem VisibleCC Clock</key>
+	<true/>
+	<key>NSStatusItem VisibleCC WiFi</key>
+	<true/>
+	<key>RemoteLiveActivitiesEnabled</key>
+	<true/>
+</dict>
+</plist>
