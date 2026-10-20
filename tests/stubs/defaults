@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+# Fake macOS defaults. Domains are plists in $STUB_STATE/defaults (and
+# defaults-currentHost for -currentHost). Only read, export, import and
+# domains are supported. Imports are logged as "defaults import <domain>".
+import os, plistlib, shutil, sys
+
+args = sys.argv[1:]
+store = os.path.join(os.environ["STUB_STATE"], "defaults")
+if args and args[0] == "-currentHost":
+    args = args[1:]
+    store += "-currentHost"
+os.makedirs(store, exist_ok=True)
+cmd = args[0] if args else ""
+if cmd in ("import",):
+    with open(os.environ["STUB_LOG"], "a") as log:
+        log.write(" ".join(["defaults"] + sys.argv[1:-1]) + "\n")
+
+
+def path_for(domain):
+    if "/" in domain:  # a plist file path, like Foo.app/Contents/Info
+        return domain if domain.endswith(".plist") else domain + ".plist"
+    return os.path.join(store, domain + ".plist")
+
+
+if cmd == "domains":
+    names = sorted(f[:-6] for f in os.listdir(store) if f.endswith(".plist") and f != "NSGlobalDomain.plist")
+    print(", ".join(names))
+elif cmd == "read":
+    path = path_for(args[1])
+    if not os.path.isfile(path):
+        sys.exit(1)
+    with open(path, "rb") as f:
+        data = plistlib.load(f)
+    if len(args) > 2:
+        if args[2] not in data:
+            sys.exit(1)
+        print(data[args[2]])
+    else:
+        print(data)
+elif cmd == "export":
+    path = path_for(args[1])
+    if not os.path.isfile(path):
+        sys.exit(0)  # like the real one, which writes an empty plist
+    if args[2] == "-":
+        sys.stdout.write(open(path).read())
+    else:
+        shutil.copy(path, args[2])
+elif cmd == "import":
+    shutil.copy(args[2], path_for(args[1]))
+else:
+    sys.exit("defaults stub: unsupported: " + " ".join(sys.argv[1:]))

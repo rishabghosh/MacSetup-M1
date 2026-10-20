@@ -1,0 +1,8 @@
+#!/bin/sh
+# Fake pgrep -f: the apps in $RUNNING (e.g. "iTerm.app:Safari.app") are open.
+pattern="$2"
+IFS=:
+for app in ${RUNNING:-}; do
+  [ "$pattern" = "/$app/Contents/MacOS/" ] && exit 0
+done
+exit 1

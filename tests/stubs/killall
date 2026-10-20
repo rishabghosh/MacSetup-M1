@@ -1,0 +1,3 @@
+#!/bin/sh
+# Fake killall: only logs the call.
+echo "killall $*" >> "$STUB_LOG"

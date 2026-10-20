@@ -19,7 +19,7 @@ Icon?
 *.pem
 *.key
 
-# Python (claude/skills/find-flight scripts)
+# Python (claudesetup/skills/find-flight scripts)
 __pycache__/
 *.py[cod]
 .venv/

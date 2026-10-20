@@ -3,14 +3,15 @@
 # Install the Entertainment apps that come from Homebrew.
 # Apps installed from a website or the App Store are listed in install-entertainment.md.
 #
+# What each app is for is in the README.
 # Run it to pick from a list, or pass --all to install everything.
 # Safe to re-run: anything already installed is skipped.
 
 . "$(dirname "$0")/lib.sh"
 
-cask vlc "VLC, plays almost any video or audio file." \
-  "e.g. MKV files and subtitles QuickTime can't open; VMR Connect remote-controls it"
-cask discord "Discord, voice and text chat for communities and games." \
-  "e.g. game servers and voice channels"
+cask vlc
+cask discord
+cask brave-browser
+cask protonvpn
 
 run_installer "Entertainment" "$@"

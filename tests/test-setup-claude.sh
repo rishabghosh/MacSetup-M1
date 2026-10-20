@@ -1,4 +1,4 @@
-# Tests for setup-claude.sh.
+# Tests for claudesetup/setup-claude.sh.
 
 # The two project folders that get their own MCP server.
 make_projects() {
@@ -8,7 +8,7 @@ make_projects() {
 
 test_claude_full_setup() {
   make_projects
-  run_tty "n" ./setup-claude.sh
+  run_tty "n" ./claudesetup/setup-claude.sh
   expect_status 0
   expect_no_out "Couldn't"
 
@@ -48,9 +48,9 @@ test_claude_full_setup() {
 
 test_claude_rerun_changes_nothing() {
   make_projects
-  run_tty "n" ./setup-claude.sh
+  run_tty "n" ./claudesetup/setup-claude.sh
   : > "$STUB_LOG"
-  run_tty "n" ./setup-claude.sh
+  run_tty "n" ./claudesetup/setup-claude.sh
   expect_status 0
   expect_no_log_match "brew install"
   expect_no_log_match " add"
@@ -64,7 +64,7 @@ test_claude_rerun_changes_nothing() {
 test_claude_keeps_existing_settings() {
   mkdir -p "$HOME/.claude"
   printf '{"model": "sonnet", "theme": "dark"}' > "$HOME/.claude/settings.json"
-  run ./setup-claude.sh --skip-desktop
+  run ./claudesetup/setup-claude.sh --skip-desktop
   expect_status 0
   local settings="$HOME/.claude/settings.json"
   expect_eq "$(json "$settings" 'd["model"]')" sonnet "model"
@@ -76,26 +76,26 @@ test_claude_keeps_existing_settings() {
 test_claude_keeps_existing_skills() {
   mkdir -p "$HOME/.claude/skills/find-flight"
   echo mine > "$HOME/.claude/skills/find-flight/SKILL.md"
-  run ./setup-claude.sh --skip-desktop
+  run ./claudesetup/setup-claude.sh --skip-desktop
   expect_out "find-flight: already there"
   expect_eq "$(cat "$HOME/.claude/skills/find-flight/SKILL.md")" mine "find-flight/SKILL.md"
 }
 
 test_claude_installs_uv_and_node() {
   without uv npx
-  run ./setup-claude.sh --skip-desktop
+  run ./claudesetup/setup-claude.sh --skip-desktop
   expect_log "brew install uv"
   expect_log "brew install node"
 }
 
 test_claude_opens_chrome_page() {
-  run_tty "y" ./setup-claude.sh --skip-code
+  run_tty "y" ./claudesetup/setup-claude.sh --skip-code
   expect_status 0
   expect_log "open https://claude.ai/chrome"
 }
 
 test_claude_skip_desktop() {
-  run ./setup-claude.sh --skip-desktop
+  run ./claudesetup/setup-claude.sh --skip-desktop
   expect_status 0
   expect_no_log "brew install --cask claude"
   expect_log "brew install --cask claude-code"
@@ -103,7 +103,7 @@ test_claude_skip_desktop() {
 }
 
 test_claude_skip_code() {
-  run_tty "n" ./setup-claude.sh --skip-code
+  run_tty "n" ./claudesetup/setup-claude.sh --skip-code
   expect_status 0
   expect_log "brew install --cask claude"
   expect_no_log "brew install --cask claude-code"
@@ -113,34 +113,34 @@ test_claude_skip_code() {
 }
 
 test_claude_unknown_option() {
-  run ./setup-claude.sh --bogus
+  run ./claudesetup/setup-claude.sh --bogus
   expect_status 1
   expect_out "Unknown option: --bogus"
 }
 
 test_claude_needs_homebrew() {
   without brew
-  run ./setup-claude.sh
+  run ./claudesetup/setup-claude.sh
   expect_status 1
   expect_out "Homebrew is not installed."
 }
 
 test_claude_needs_xcode_tools() {
   export XCODE_MISSING=1
-  run ./setup-claude.sh
+  run ./claudesetup/setup-claude.sh
   expect_status 1
   expect_log "xcode-select --install"
 }
 
 test_claude_needs_claude_on_path() {
   without claude
-  run ./setup-claude.sh --skip-desktop
+  run ./claudesetup/setup-claude.sh --skip-desktop
   expect_status 1
   expect_out "The claude command isn't on PATH."
 }
 
 test_claude_warns_about_missing_projects() {
-  run ./setup-claude.sh --skip-desktop
+  run ./claudesetup/setup-claude.sh --skip-desktop
   expect_status 0
   expect_out "atlassian: $HOME/projects/tee_jutsu_v1 doesn't exist."
   expect_out "vercel: $HOME/projects/teejutsu-admin-console doesn't exist."

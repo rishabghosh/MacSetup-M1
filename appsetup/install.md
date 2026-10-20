@@ -13,14 +13,17 @@ Each category has a script that installs its Homebrew apps, and a page listing t
 
 ## Running a script
 
-Each script lists its apps and tools, numbered, with a short description and an example of what each one is for. Command-line tools also show how often they've been run (from shell history and past Claude Code sessions). Anything already installed is marked. Then you pick:
+Each script shows a checklist of its apps and tools by their Homebrew names. Anything already installed is marked. The checklist fills the terminal window and resizes with it. What each app does is in the [README](../README.md#install-apps).
 
-- `a` installs everything
-- `1 3 5-8` installs only those
-- `a !4 !10-12` installs everything except those
-- `q` quits
+- **↑ / ↓** (or `j` / `k`) moves the cursor.
+- **Space** ticks or unticks the item under the cursor.
+- **All**, the first row, ticks everything. Press space on it again to untick everything. `a` does the same from anywhere in the list.
+- **Enter** installs what's ticked.
+- **q** or **Esc** quits without installing anything.
 
-Run a script with `--all` to skip the question and install everything, or `--list` to only see the list.
+To install everything except a few items, tick All, then untick the ones you don't want.
+
+Run a script with `--all` to skip the checklist and install everything, or `--list` to only print the list.
 
 Each script installs Homebrew first if it's missing, skips anything that's already installed, and lists any failures at the end. You can run them in any order.
 

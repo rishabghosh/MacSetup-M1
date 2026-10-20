@@ -8,7 +8,7 @@
 ./install-entertainment.sh
 ```
 
-Installs VLC and Discord.
+Installs VLC, Discord, Brave Browser and Proton VPN.
 
 ## Install by hand
 

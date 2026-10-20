@@ -5,17 +5,17 @@
 # claude.ai connectors, desktop extensions, Claude in Chrome).
 #
 # Usage:
-#   ./setup-claude.sh                  set up both
-#   ./setup-claude.sh --skip-desktop   Claude Code only
-#   ./setup-claude.sh --skip-code      Claude Desktop only
-#   PROJECTS_DIR=~/code ./setup-claude.sh   projects live somewhere other than ~/projects
+#   ./claudesetup/setup-claude.sh                  set up both
+#   ./claudesetup/setup-claude.sh --skip-desktop   Claude Code only
+#   ./claudesetup/setup-claude.sh --skip-code      Claude Desktop only
+#   PROJECTS_DIR=~/code ./claudesetup/setup-claude.sh   projects live somewhere other than ~/projects
 #
 # Safe to re-run: anything already installed or configured is left alone.
 # Written for the macOS default bash (3.2), so no associative arrays.
 
 set -u
 
-REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
+SETUP_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECTS_DIR="${PROJECTS_DIR:-$HOME/projects}"
 SKIP_DESKTOP=false
 SKIP_CODE=false
@@ -241,8 +241,8 @@ copy_missing() {
 
 install_skills() {
   bold "Skills and commands..."
-  copy_missing "$REPO_DIR/claude/skills" "$HOME/.claude/skills"
-  copy_missing "$REPO_DIR/claude/commands" "$HOME/.claude/commands"
+  copy_missing "$SETUP_DIR/skills" "$HOME/.claude/skills"
+  copy_missing "$SETUP_DIR/commands" "$HOME/.claude/commands"
 
   local line repo skill
   for line in $PUBLIC_SKILLS; do

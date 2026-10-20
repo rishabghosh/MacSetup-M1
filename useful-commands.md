@@ -4,7 +4,7 @@ Commands from the old Mac's shell history that are worth keeping.
 
 ## Images
 
-These change every PNG in the current folder in place, so run them on a copy if you want to keep the originals. They need ImageMagick (`imagemagick` in `apps/install-coding.sh`).
+These change every PNG in the current folder in place, so run them on a copy if you want to keep the originals. They need ImageMagick (`imagemagick` in `appsetup/install-coding.sh`).
 
 Trim the empty or transparent border off every PNG:
 
