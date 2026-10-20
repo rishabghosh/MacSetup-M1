@@ -248,6 +248,9 @@ PUBLIC = [
 # Exceptions that stay private: credentials-adjacent dotfiles, and JetBrains
 # options files that hold accounts, tokens, recent projects or usage data
 # rather than settings.
+# known_hosts is the one file in ~/.ssh that may go in the repo: it holds
+# servers' public host keys, nothing of yours.
+SSH_PUBLIC = {"dotfiles/.ssh/known_hosts"}
 PRIVATE = [
     "dotfiles/.ssh/**",
     "dotfiles/.aws/**",
@@ -310,6 +313,8 @@ PRIVATE_RE = [glob_regex(p) for p in PRIVATE]
 
 
 def is_public(rel):
+    if rel in SSH_PUBLIC:
+        return True
     if any(r.match(rel) for r in PRIVATE_RE):
         return False
     if re.match(r"apps/(webstorm|jetbrains)/[^/]+/options/", rel) and JETBRAINS_STATE.search(os.path.basename(rel)):

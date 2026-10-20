@@ -176,7 +176,9 @@ restore_dotfiles() {
       info "$rel: left alone. Compare with: diff ~/$rel '$(saved_path "dotfiles/$rel")'"
     fi
   done
+  [ -d "$HOME/.ssh" ] && chmod 700 "$HOME/.ssh"
   [ -f "$HOME/.ssh/config" ] && chmod 600 "$HOME/.ssh/config"
+  [ -f "$HOME/.ssh/known_hosts" ] && chmod 600 "$HOME/.ssh/known_hosts"
 }
 
 restore_iterm() {

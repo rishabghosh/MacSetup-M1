@@ -75,7 +75,8 @@ com.apple.screensaver
 "
 
 # Dotfiles and config files under ~. Credentials (~/.aws/credentials,
-# ~/.kube/config, ssh keys) are left out on purpose.
+# ~/.kube/config, ssh keys) are left out on purpose. known_hosts holds only
+# the public host keys of servers you've connected to.
 DOTFILES="
 .zshrc
 .zprofile
@@ -90,6 +91,7 @@ DOTFILES="
 .npmrc
 .p10k.zsh
 .ssh/config
+.ssh/known_hosts
 .aws/config
 .config/git
 .config/starship.toml

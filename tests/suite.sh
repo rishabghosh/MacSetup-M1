@@ -17,8 +17,8 @@ if [ -z "$FILTER" ]; then
   echo "shellcheck"
   # lib.sh is sourced through "$(dirname "$0")", which shellcheck can't follow.
   # Style notes are shown but only warnings and errors fail the run.
-  shellcheck -x -e SC1091 -s bash -f gcc ./*.sh appsetup/*.sh claudesetup/*.sh settings/*.sh appsettings/*/*.sh tests/*.sh | sed 's/^/  /'
-  if shellcheck -x -e SC1091 -s bash -S warning ./*.sh appsetup/*.sh claudesetup/*.sh settings/*.sh appsettings/*/*.sh tests/*.sh; then
+  shellcheck -x -e SC1091 -s bash -f gcc repos/*.sh appsetup/*.sh claudesetup/*.sh settings/*.sh appsettings/*/*.sh tests/*.sh | sed 's/^/  /'
+  if shellcheck -x -e SC1091 -s bash -S warning repos/*.sh appsetup/*.sh claudesetup/*.sh settings/*.sh appsettings/*/*.sh tests/*.sh; then
     echo "  ok"
   else
     FAILURES=$((FAILURES + 1))
